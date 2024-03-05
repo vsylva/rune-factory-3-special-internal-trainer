@@ -1,9 +1,8 @@
 static mut SANDLL_ADDR_POINTER: *const i64 =
     unsafe { std::ptr::addr_of!(crate::var::SANDLL_ADDR) } as *const i64;
 
-static mut AUTO_PRESS_B_MARK: i64 = 0;
 static mut AUTO_PRESS_B_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(AUTO_PRESS_B_MARK) } as *const i64;
+    unsafe { std::ptr::addr_of!(crate::var::auto_press::AUTO_PRESS_MARK) } as *const i64;
 
 static mut SOIL_QUALITY_MARK_POINTER: *const i64 =
     unsafe { std::ptr::addr_of!(crate::var::farm::soil_quality::MARK) } as *const i64;
@@ -17,8 +16,9 @@ static mut TILTT_PLOTS_MARK_POINTER: *const i64 =
 static mut PLANT_PLOTS_MARK_POINTER: *const i64 =
     unsafe { std::ptr::addr_of!(crate::var::farm::plant_plots::MARK) } as *const i64;
 
-static mut CROP_ID_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::farm::plant_plots::CROP_ID) } as *const i64;
+static mut CROP_PROP_POINTER: *const crate::var::CropProp =
+    unsafe { std::ptr::addr_of!(crate::var::farm::plant_plots::CROP_PROP) }
+        as *const crate::var::CropProp;
 
 #[allow(unused)]
 #[inline(never)]
@@ -271,7 +271,7 @@ pub(crate) unsafe extern "system" fn skill_exp_mul() {
 
 #[allow(unused)]
 #[inline(never)]
-pub(crate) unsafe extern "system" fn farm_manager() {
+pub(crate) unsafe extern "system" fn farm() {
     std::arch::asm!("push rax", options(nomem, nostack));
     std::arch::asm!("push r11", options(nomem, nostack));
 
@@ -331,7 +331,7 @@ pub(crate) unsafe extern "system" fn farm_manager() {
         in("r12") WATERING_PLOTS_MARK_POINTER,
         in("r13") TILTT_PLOTS_MARK_POINTER,
         in("r14") PLANT_PLOTS_MARK_POINTER,
-        in("r15") CROP_ID_POINTER,
+        in("r15") CROP_PROP_POINTER,
         options(nostack,nomem)
     );
 

@@ -21,6 +21,7 @@ pub(crate) mod auto_press {
     // size 25
     pub(crate) const PAT: &str = "66 F7 D2 66 23 D0";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
+    pub(crate) static mut AUTO_PRESS_MARK: i64 = 0;
 }
 
 pub(crate) mod walk_through_walls {
@@ -71,9 +72,39 @@ pub(crate) mod farm {
     }
 
     pub(crate) mod plant_plots {
+
         pub(crate) static mut MARK: i64 = 0;
         pub(crate) static mut TOGGLE: bool = false;
-        pub(crate) static mut CROP_ID: i64 = 0x105A;
+        pub(crate) static mut CROP_PROP: crate::var::CropProp = crate::var::CropProp {
+            ty: 0,
+            growth_stage_lv: 0x10,
+        };
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+#[repr(C)]
+pub(crate) struct CropProp {
+    ty: u8,
+    growth_stage_lv: u8,
+}
+
+impl CropProp {
+    pub(crate) fn set_crop_type(&mut self, ct: CropType) {
+        self.ty = (ct as u8) << 1;
+    }
+
+    pub(crate) unsafe fn set_crop_growth_stage(&mut self, stage: CropGrowthStage) {
+        // let stage_lv_ptr = (self as *mut CropProp as *mut u8).byte_add(1);
+        // *stage_lv_ptr &= 0b0000_1111;
+        // *stage_lv_ptr |= (stage as u8) << 4;
+        self.growth_stage_lv &= 0b0000_1111;
+        self.growth_stage_lv |= (stage as u8) << 4;
+    }
+
+    pub(crate) fn set_crop_level(&mut self, level: CropLevel) {
+        self.growth_stage_lv &= 0b0111_0000;
+        self.growth_stage_lv |= level as u8;
     }
 }
 
@@ -114,7 +145,7 @@ pub(crate) enum CropType {
 
     水晶 = 20, // 可砸，出的不知道是不是buff
 
-    苹果 = 21, //  可砸，什么都不会出
+    // 苹果 = 21, //  可砸，什么都不会出
     // 苹果 = 22    同上
     // 苹果 = 23    同上
     草莓 = 24,     // Strawberry
@@ -178,13 +209,18 @@ pub(crate) enum CropType {
     strum_macros::EnumIter,
     strum_macros::Display,
 )]
-pub(crate) enum CropGrowthStage {
-    None = 0,
-    A = 1,
-    B = 2,
-    C = 3,
-    D = 4,
-    E = 5,
+
+pub(crate) enum CropLevel {
+    LV1 = 0,
+    LV2 = 1,
+    LV3 = 2,
+    LV4 = 3,
+    LV5 = 4,
+    LV6 = 5,
+    LV7 = 6,
+    LV8 = 7,
+    LV9 = 8,
+    LV10 = 9,
 }
 
 #[derive(
@@ -199,16 +235,11 @@ pub(crate) enum CropGrowthStage {
     strum_macros::EnumIter,
     strum_macros::Display,
 )]
-
-pub(crate) enum CropLevel {
-    LV1 = 0,
-    LV2 = 1,
-    LV3 = 2,
-    LV4 = 3,
-    LV5 = 4,
-    LV6 = 5,
-    LV7 = 6,
-    LV8 = 7,
-    LV9 = 8,
-    LV10 = 9,
+pub(crate) enum CropGrowthStage {
+    // 无 = 0,
+    一阶段 = 0x1,
+    二阶段 = 0x2,
+    三阶段 = 0x3,
+    四阶段 = 0x4,
+    五阶段 = 0x5,
 }

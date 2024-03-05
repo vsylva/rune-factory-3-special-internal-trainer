@@ -2,17 +2,32 @@ use hudhook::{imgui, ImguiRenderLoop, TextureLoader};
 
 use crate::{util::is_key_down_once, var};
 
+static mut CROP_TYPE_SELECTED: var::CropType = var::CropType::无;
 static mut CROP_TYPE_LIST: Vec<var::CropType> = Vec::new();
 
-static mut CROP_TYPE_SELECTED: var::CropType = var::CropType::无;
-
+static mut CROP_LEVEL_SELECTED: var::CropLevel = var::CropLevel::LV1;
 static mut CROP_LEVEL_LIST: Vec<var::CropLevel> = Vec::new();
 
-static mut CROP_LEVEL_SELECTED: var::CropLevel = var::CropLevel::LV1;
+static mut CROP_GROWTH_STAGE_SELECTED: var::CropGrowthStage = var::CropGrowthStage::一阶段;
+static mut CROP_GROWTH_STAGE_LIST: Vec<var::CropGrowthStage> = Vec::new();
 
 static ONCE: std::sync::Once = std::sync::Once::new();
 
-pub(crate) unsafe fn draw_ui_body(ui: &hudhook::imgui::Ui) {
+pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
+    ONCE.call_once(|| {
+        for v in <var::CropType as strum::IntoEnumIterator>::iter() {
+            CROP_TYPE_LIST.push(v)
+        }
+
+        for v in <var::CropLevel as strum::IntoEnumIterator>::iter() {
+            CROP_LEVEL_LIST.push(v)
+        }
+
+        for v in <var::CropGrowthStage as strum::IntoEnumIterator>::iter() {
+            CROP_GROWTH_STAGE_LIST.push(v)
+        }
+    });
+
     if ui.collapsing_header("功能", imgui::TreeNodeFlags::empty()) {
         if ui.checkbox(
             "钓鱼自动提竿",
@@ -142,23 +157,9 @@ pub(crate) unsafe fn draw_ui_body(ui: &hudhook::imgui::Ui) {
                 }
             }
 
-            ONCE.call_once(|| {
-                for v in <var::CropType as strum::IntoEnumIterator>::iter() {
-                    CROP_TYPE_LIST.push(v)
-                }
-
-                for v in <var::CropLevel as strum::IntoEnumIterator>::iter() {
-                    CROP_LEVEL_LIST.push(v)
-                }
-            });
-
             if var::farm::plant_plots::TOGGLE {
                 if let Some(cb) = ui.begin_combo("种子类型", CROP_TYPE_SELECTED.to_string()) {
-                    for current in ::core::mem::transmute::<
-                        *const Vec<var::CropType>,
-                        &Vec<var::CropType>,
-                    >(std::ptr::addr_of!(CROP_TYPE_LIST))
-                    {
+                    for current in &*::core::ptr::addr_of_mut!(CROP_TYPE_LIST) {
                         if CROP_TYPE_SELECTED == *current {
                             ui.set_item_default_focus();
                         }
@@ -175,17 +176,12 @@ pub(crate) unsafe fn draw_ui_body(ui: &hudhook::imgui::Ui) {
                 }
 
                 ui.same_line();
-                if ui.button("种植") {
-                    *(std::ptr::addr_of_mut!(var::farm::plant_plots::CROP_ID) as *mut i64
-                        as *mut u8) = CROP_TYPE_SELECTED as u8 * 2;
+                if ui.button("设置类型") {
+                    var::farm::plant_plots::CROP_PROP.set_crop_type(CROP_TYPE_SELECTED);
                 }
 
                 if let Some(cb) = ui.begin_combo("种子等级", CROP_LEVEL_SELECTED.to_string()) {
-                    for current in ::core::mem::transmute::<
-                        *const Vec<var::CropLevel>,
-                        &Vec<var::CropLevel>,
-                    >(std::ptr::addr_of!(CROP_LEVEL_LIST))
-                    {
+                    for current in &*::core::ptr::addr_of!(CROP_LEVEL_LIST) {
                         if CROP_LEVEL_SELECTED == *current {
                             ui.set_item_default_focus();
                         }
@@ -202,31 +198,37 @@ pub(crate) unsafe fn draw_ui_body(ui: &hudhook::imgui::Ui) {
                 }
 
                 ui.same_line();
-                if ui.button("设置") {
-                    let ptr = ::core::ptr::addr_of!(var::farm::plant_plots::CROP_ID)
-                        .byte_add(1)
-                        .cast_mut()
-                        .cast::<u8>();
+                if ui.button("设置等级") {
+                    var::farm::plant_plots::CROP_PROP.set_crop_level(CROP_LEVEL_SELECTED);
+                }
 
-                    *ptr &= 0xF0;
-                    *ptr |= CROP_LEVEL_SELECTED as u8;
+                if let Some(cb) = ui.begin_combo("成长阶段", CROP_GROWTH_STAGE_SELECTED.to_string())
+                {
+                    for current in &*::core::ptr::addr_of_mut!(CROP_GROWTH_STAGE_LIST) {
+                        if CROP_GROWTH_STAGE_SELECTED == *current {
+                            ui.set_item_default_focus();
+                        }
+
+                        if ui
+                            .selectable_config(current.to_string())
+                            .selected(CROP_GROWTH_STAGE_SELECTED == *current)
+                            .build()
+                        {
+                            CROP_GROWTH_STAGE_SELECTED = *current;
+                        }
+                    }
+                    cb.end();
+                }
+
+                ui.same_line();
+                if ui.button("设置阶段") {
+                    var::farm::plant_plots::CROP_PROP
+                        .set_crop_growth_stage(CROP_GROWTH_STAGE_SELECTED);
                 }
 
                 if ui.button("清除农田作物") {
-                    CROP_TYPE_SELECTED = var::CropType::无;
-
-                    *(std::ptr::addr_of_mut!(var::farm::plant_plots::CROP_ID) as *mut i64
-                        as *mut u8) = CROP_TYPE_SELECTED as u8;
-
-                    CROP_LEVEL_SELECTED = var::CropLevel::LV1;
-
-                    let ptr = ::core::ptr::addr_of!(var::farm::plant_plots::CROP_ID)
-                        .byte_add(1)
-                        .cast_mut()
-                        .cast::<u8>();
-
-                    *ptr &= 0xF0;
-                    *ptr |= CROP_LEVEL_SELECTED as u8;
+                    var::farm::plant_plots::CROP_PROP.set_crop_type(var::CropType::无);
+                    var::farm::plant_plots::CROP_PROP.set_crop_level(var::CropLevel::LV1);
                 }
             }
         }
@@ -272,10 +274,10 @@ impl ImguiRenderLoop for MyRenderLoop {
                 .title_bar(true)
                 .size([500.0, 400.0], hudhook::imgui::Condition::FirstUseEver)
                 .resizable(true)
-                .collapsible(false)
+                .collapsible(true)
                 .movable(true)
                 .build(|| {
-                    draw_ui_body(ui);
+                    on_frame(ui);
                 });
         }
     }

@@ -70,27 +70,23 @@ impl Hook {
     }
 
     pub(crate) unsafe fn create_hook(&self) -> &Self {
-        let status = minhook_raw::create_hook(
+        minhook_raw::create_hook(
             self.target_addr,
             self.detour_fn_addr,
             ::core::ptr::null_mut(),
         );
 
-        println!("create_hook: {}", status);
-
         self
     }
 
     pub(crate) fn enable(&mut self) {
-        let status = minhook_raw::enable_hook(self.target_addr);
-        println!("enable_hook: {}", status);
+        minhook_raw::enable_hook(self.target_addr);
         self.is_enable = true;
     }
 
     pub(crate) fn disable(&mut self) {
-        let status = minhook_raw::disable_hook(self.target_addr);
+        minhook_raw::disable_hook(self.target_addr);
 
-        println!("disable_hook: {}", status);
         self.is_enable = false;
     }
 }
@@ -140,7 +136,7 @@ pub(crate) unsafe fn hooks(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) 
 
     crate::var::farm::HOOK = Hook::new()
         .build_target(mod_addr, mod_data, crate::var::farm::PAT, 8)
-        .build_detour(crate::asm::farm_manager as *mut ::core::ffi::c_void, 0xFF)
+        .build_detour(crate::asm::farm as *mut ::core::ffi::c_void, 0xFF)
         .create_hook()
         .to_owned();
 }
