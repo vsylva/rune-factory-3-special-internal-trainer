@@ -2,6 +2,7 @@
 name = "rune_factory3_trainer"
 version = "0.1.1"
 edition = "2021"
+authors = ["vSylva"]
 
 [lib]
 name = "xinput1_4"
