@@ -1,0 +1,18 @@
+[package]
+name = "rune_factory3_trainer"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "xinput1_4"
+crate-type = ["cdylib"]
+
+[dependencies]
+vcheat = "0.6.0"
+minhook_raw = "0.3.0"
+hudhook = "0.6.1"
+strum = "0.26.1"
+strum_macros = "0.26.1"
+
+[build-dependencies]
+forward-dll-mini = "0.1.16"
