@@ -105,9 +105,6 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
                 crate::var::farm::watering_plots::TOGGLE = false;
                 crate::var::farm::plant_plots::TOGGLE = false;
 
-                CROP_TYPE_SELECTED = var::CropType::无;
-                CROP_LEVEL_SELECTED = var::CropLevel::LV1;
-
                 var::farm::HOOK.disable();
             }
         }
@@ -228,7 +225,6 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
 
                 if ui.button("清除农田作物") {
                     var::farm::plant_plots::CROP_PROP.set_crop_type(var::CropType::无);
-                    var::farm::plant_plots::CROP_PROP.set_crop_level(var::CropLevel::LV1);
                 }
             }
         }

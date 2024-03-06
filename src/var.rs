@@ -91,13 +91,13 @@ pub(crate) struct CropProp {
 
 impl CropProp {
     pub(crate) fn set_crop_type(&mut self, ct: CropType) {
+        if ct as u8 == 0 {
+            self.ty = 0;
+        }
         self.ty = (ct as u8) << 1;
     }
 
     pub(crate) unsafe fn set_crop_growth_stage(&mut self, stage: CropGrowthStage) {
-        // let stage_lv_ptr = (self as *mut CropProp as *mut u8).byte_add(1);
-        // *stage_lv_ptr &= 0b0000_1111;
-        // *stage_lv_ptr |= (stage as u8) << 4;
         self.growth_stage_lv &= 0b0000_1111;
         self.growth_stage_lv |= (stage as u8) << 4;
     }
