@@ -12,28 +12,28 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build-upload:
+  build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-            toolchain: stable
-            target: x86_64-pc-windows-msvc
-            profile: minimal
-            override: true
+    - name: Build
+      run: |
+        rustup default stable-x86_64-pc-windows-msvc
+        cargo build --release
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+    - name: Install parse-changelog
+      uses: taiki-e/install-action@parse-changelog
 
-      - name: Upload
-        uses: softprops/action-gh-release@v1
-        with:
-          files: target/release/xinput1_4.dll
+    - name: Generate changelog
+      run: parse-changelog CHANGELOG.md > CHANGELOG.txt
+
+    - name: Upload file
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: CHANGELOG.txt
+        prerelease: true
+        files: target/release/xinput1_4.dll
+        fail_on_unmatched_files: true

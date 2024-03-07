@@ -1,25 +1,3 @@
-static mut SANDLL_ADDR_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::SANDLL_ADDR) } as *const i64;
-
-static mut AUTO_PRESS_B_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::auto_press::AUTO_PRESS_MARK) } as *const i64;
-
-static mut SOIL_QUALITY_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::farm::soil_quality::MARK) } as *const i64;
-
-static mut WATERING_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::farm::watering_plots::MARK) } as *const i64;
-
-static mut TILTT_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::farm::tilth_plots::MARK) } as *const i64;
-
-static mut PLANT_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::var::farm::plant_plots::MARK) } as *const i64;
-
-static mut CROP_PROP_POINTER: *const crate::var::CropProp =
-    unsafe { std::ptr::addr_of!(crate::var::farm::plant_plots::CROP_PROP) }
-        as *const crate::var::CropProp;
-
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn fishing() {
@@ -39,7 +17,7 @@ pub(crate) unsafe extern "system" fn fishing() {
     "mov dword ptr [rax],0",
     "1:",
     "cmp cx,03",
-    in("rax") AUTO_PRESS_B_MARK_POINTER,
+    in("rax") crate::hook::auto_press::AUTO_PRESS_MARK_POINTER,
     options(nomem,nostack)
     );
 
@@ -78,7 +56,7 @@ pub(crate) unsafe extern "system" fn auto_press() {
             "jne 0f",
             "mov dx,2",
             "0:",
-            in("rax") AUTO_PRESS_B_MARK_POINTER,
+            in("rax") crate::hook::auto_press::AUTO_PRESS_MARK_POINTER,
             options(nomem,nostack)
     );
 
@@ -120,7 +98,7 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
         lea rax, [rcx]
         cmp rbx, rax
         ",
-        in("rax") SANDLL_ADDR_POINTER,
+        in("rax") crate::SANDLL_ADDR_POINTER,
         options(nomem, nostack)
     );
 
@@ -197,7 +175,7 @@ pub(crate) unsafe extern "system" fn friendship_mul() {
 
 #[allow(unused)]
 #[inline(never)]
-pub(crate) unsafe extern "system" fn instant_crop_growth() {
+pub(crate) unsafe extern "system" fn crop_instant_growth() {
     std::arch::asm!(
         "
         mov edx, [rax]
@@ -327,11 +305,11 @@ pub(crate) unsafe extern "system" fn farm() {
         // Tilt = 2
         // Plant = 3
 
-        in("r11") SOIL_QUALITY_MARK_POINTER,
-        in("r12") WATERING_PLOTS_MARK_POINTER,
-        in("r13") TILTT_PLOTS_MARK_POINTER,
-        in("r14") PLANT_PLOTS_MARK_POINTER,
-        in("r15") CROP_PROP_POINTER,
+        in("r11") crate::hook::farm::soil_quality::SOIL_QUALITY_MARK_POINTER,
+        in("r12") crate::hook::farm::watering_plots::WATERING_PLOTS_MARK_POINTER        ,
+        in("r13") crate::hook::farm::tilth_plots::TILTT_PLOTS_MARK_POINTER,
+        in("r14") crate::hook::farm::plant_plots::PLANT_PLOTS_MARK_POINTER,
+        in("r15") crate::hook::farm::plant_plots::CROP_PROP_POINTER,
         options(nostack,nomem)
     );
 
