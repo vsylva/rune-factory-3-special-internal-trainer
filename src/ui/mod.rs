@@ -1,5 +1,5 @@
-mod manager;
 mod component;
+mod draw_ui;
 mod setting;
 
 pub(crate) static mut WINDOW_HANDLE: isize = 0;
@@ -15,6 +15,77 @@ static mut CROP_GROWTH_STAGE_SELECTED: crate::hook::CropGrowthStage =
     crate::hook::CropGrowthStage::一阶段;
 static mut CROP_GROWTH_STAGE_LIST: Vec<crate::hook::CropGrowthStage> = Vec::new();
 
+static mut TIME_SECOND_SELECTED: u8 = 0;
+static mut TIME_SECOND_LIST: Vec<u8> = Vec::new();
+static mut TIME_HOUR_SELECTED: u8 = 0;
+static mut TIME_HOUR_LIST: Vec<u8> = Vec::new();
+static mut TIME_DAY_SELECTED: u8 = 1;
+static mut TIME_DAY_LIST: Vec<u8> = Vec::new();
+static mut TIME_SEASON_SELECTED: Season = Season::春;
+static mut TIME_SEASON_LIST: Vec<Season> = Vec::new();
+static mut TIME_YEAR_SELECTED: u8 = 1;
+static mut TIME_YEAR_LIST: Vec<u8> = Vec::new();
+static mut TIME_SLOW_MUL_SELECTED: TimeSlowMul = TimeSlowMul::默认;
+static mut TIME_SLOW_MUL_LIST: Vec<TimeSlowMul> = Vec::new();
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Hash,
+    strum_macros::EnumIter,
+    strum_macros::Display,
+)]
+pub(crate) enum Season {
+    春 = 0,
+    夏 = 1,
+    秋 = 2,
+    冬 = 3,
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Hash,
+    strum_macros::EnumIter,
+    strum_macros::Display,
+)]
+pub(crate) enum TimeSlowMul {
+    暂停时间 = 0,
+    百分之一 = 0x3D,
+    十分之一 = 0x266,
+    四分之一 = 0x600,
+    二分之一 = 0xC00,
+    默认 = 0x1800,
+    一点五 = 0x2400,
+    两点零 = 0x3000,
+}
+
+impl Into<TimeSlowMul> for u32 {
+    fn into(self) -> TimeSlowMul {
+        match self {
+            0 => TimeSlowMul::暂停时间,
+            0x3D => TimeSlowMul::百分之一,
+            0x266 => TimeSlowMul::十分之一,
+            0x600 => TimeSlowMul::四分之一,
+            0xC00 => TimeSlowMul::二分之一,
+            0x1800 => TimeSlowMul::默认,
+            0x2400 => TimeSlowMul::一点五,
+            0x3000 => TimeSlowMul::两点零,
+            _ => unreachable!(),
+        }
+    }
+}
+
 pub(crate) struct RenderLoop;
 
 impl hudhook::ImguiRenderLoop for RenderLoop {
@@ -28,16 +99,42 @@ impl hudhook::ImguiRenderLoop for RenderLoop {
             setting::set_font(_ctx, 20.0);
             _ctx.set_ini_filename(None);
 
-            for v in <crate::hook::CropType as strum::IntoEnumIterator>::iter() {
-                CROP_TYPE_LIST.push(v)
+            for crop_type in <crate::hook::CropType as strum::IntoEnumIterator>::iter() {
+                CROP_TYPE_LIST.push(crop_type)
             }
 
-            for v in <crate::hook::CropLevel as strum::IntoEnumIterator>::iter() {
-                CROP_LEVEL_LIST.push(v)
+            for crop_level in <crate::hook::CropLevel as strum::IntoEnumIterator>::iter() {
+                CROP_LEVEL_LIST.push(crop_level)
             }
 
-            for v in <crate::hook::CropGrowthStage as strum::IntoEnumIterator>::iter() {
-                CROP_GROWTH_STAGE_LIST.push(v)
+            for crop_growth_stage in
+                <crate::hook::CropGrowthStage as strum::IntoEnumIterator>::iter()
+            {
+                CROP_GROWTH_STAGE_LIST.push(crop_growth_stage)
+            }
+
+            for second in 0..60 {
+                TIME_SECOND_LIST.push(second);
+            }
+
+            for hour in 0..24 {
+                TIME_HOUR_LIST.push(hour);
+            }
+
+            for day in 1..31 {
+                TIME_DAY_LIST.push(day);
+            }
+
+            for season in <Season as strum::IntoEnumIterator>::iter() {
+                TIME_SEASON_LIST.push(season);
+            }
+
+            for year in 1..100 {
+                TIME_YEAR_LIST.push(year);
+            }
+
+            for time_slow_mul in <TimeSlowMul as strum::IntoEnumIterator>::iter() {
+                TIME_SLOW_MUL_LIST.push(time_slow_mul)
             }
 
             let windows_name = "Rune Factory 3 Special\0"
@@ -81,7 +178,7 @@ impl hudhook::ImguiRenderLoop for RenderLoop {
                 .collapsible(true)
                 .movable(true)
                 .build(|| {
-                    manager::on_frame(ui);
+                    draw_ui::on_frame(ui);
                 });
         }
     }

@@ -32,6 +32,8 @@ unsafe extern "system" fn DllMain(
                 vcheat::internal::free_dll_exit_thread(h_module, 0);
             }
 
+
+
             init_hook();
             init_hudhook(h_module);
         });

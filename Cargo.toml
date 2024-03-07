@@ -1,6 +1,6 @@
 [package]
 name = "rune_factory3_trainer"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["vSylva"]
 
@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 [dependencies]
 vcheat = "0.6.0"
 minhook_raw = "0.3.0"
-hudhook = "0.6.1"
+hudhook = "0.6.2"
 strum = "0.26.1"
 strum_macros = "0.26.1"
 

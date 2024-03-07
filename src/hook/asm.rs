@@ -17,7 +17,7 @@ pub(crate) unsafe extern "system" fn fishing() {
     "mov dword ptr [rax],0",
     "1:",
     "cmp cx,03",
-    in("rax") crate::hook::auto_press::AUTO_PRESS_MARK_POINTER,
+    in("rax") crate::hook::auto_press::MARK_POINTER,
     options(nomem,nostack)
     );
 
@@ -56,7 +56,7 @@ pub(crate) unsafe extern "system" fn auto_press() {
             "jne 0f",
             "mov dx,2",
             "0:",
-            in("rax") crate::hook::auto_press::AUTO_PRESS_MARK_POINTER,
+            in("rax") crate::hook::auto_press::MARK_POINTER,
             options(nomem,nostack)
     );
 
@@ -305,10 +305,10 @@ pub(crate) unsafe extern "system" fn farm() {
         // Tilt = 2
         // Plant = 3
 
-        in("r11") crate::hook::farm::soil_quality::SOIL_QUALITY_MARK_POINTER,
-        in("r12") crate::hook::farm::watering_plots::WATERING_PLOTS_MARK_POINTER        ,
-        in("r13") crate::hook::farm::tilth_plots::TILTT_PLOTS_MARK_POINTER,
-        in("r14") crate::hook::farm::plant_plots::PLANT_PLOTS_MARK_POINTER,
+        in("r11") crate::hook::farm::soil_quality::MARK_POINTER,
+        in("r12") crate::hook::farm::watering_plots::MARK_POINTER        ,
+        in("r13") crate::hook::farm::tilth_plots::MARK_POINTER,
+        in("r14") crate::hook::farm::plant_plots::MARK_POINTER,
         in("r15") crate::hook::farm::plant_plots::CROP_PROP_POINTER,
         options(nostack,nomem)
     );
@@ -324,6 +324,52 @@ pub(crate) unsafe extern "system" fn farm() {
         "
         add rbx, 0x8
         cmp di, r15w
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        options(nomem, nostack, noreturn)
+    );
+}
+
+#[allow(unused)]
+#[inline(never)]
+pub(crate) unsafe extern "system" fn time() -> ! {
+    std::arch::asm!("push rax", options(nostack, nomem));
+
+    std::arch::asm!(
+        "
+        lea rax, [r9+04]
+        mov [r15], rax
+        ",
+        in("r15") crate::hook::time::POINTER_POINTER,
+        options(nomem,nostack)
+    );
+
+    std::arch::asm!("pop rax", options(nostack, nomem));
+    std::arch::asm!("pop r15", options(nostack, nomem));
+
+    std::arch::asm!(
+        "
+        add edx,eax
+        add [r9+04],edx
         ",
         options(nomem, nostack)
     );
