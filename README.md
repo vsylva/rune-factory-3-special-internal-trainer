@@ -12,7 +12,11 @@ https://github.com/vSylva/rune_factory_3_trainer/releases
 
 ## 备注
 
+游戏版本: 1.0.4
+
 如果刚进入游戏，**角色不能移动**，将游戏窗口最小化在打开就可以了
+
+遇到 bug 可以提交issue
 
 ## 编译
 
