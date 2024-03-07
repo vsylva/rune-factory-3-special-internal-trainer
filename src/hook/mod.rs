@@ -7,7 +7,6 @@ pub(crate) mod fishing {
     // size 37
     pub(crate) const PAT: &str = "0F B7 48 18 66 83 F9 03";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
 }
 
 pub(crate) mod auto_press {
@@ -24,35 +23,36 @@ pub(crate) mod walk_through_walls {
     // target 5 + 1
     pub(crate) const PAT: &str = "48 8B F2 48 85 C9";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
 }
 
 pub(crate) mod friendship_mul {
     // target 5 + 1
     pub(crate) const PAT: &str = "44 8B CA 4D 85 DB";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
 }
 
 pub(crate) mod instant_crop_growth {
     // target 5 + 1
     pub(crate) const PAT: &str = "8B 10 D1 EA 83 E2 7F 74";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
 }
 
 pub(crate) mod skill_exp_mul {
     // target 5 + 1
     pub(crate) const PAT: &str = "4C 63 C2 0F B7 CE";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
+}
+
+pub(crate) mod time_pause {
+    // target 4
+    pub(crate) const PAT: &str = "41 01 51 04 4D 85 C0";
+    pub(crate) static mut HOOK: super::HookBytes = super::HookBytes::new();
 }
 
 pub(crate) mod farm {
     // target 5 + 3
     pub(crate) const PAT: &str = "48 83 C3 08 66 41 3B FF";
     pub(crate) static mut HOOK: crate::hook::Hook = unsafe { ::core::mem::zeroed() };
-    pub(crate) static mut TOGGLE: bool = false;
 
     pub(crate) mod soil_quality {
         pub(crate) static mut MARK: i64 = 0;
@@ -254,15 +254,20 @@ pub(crate) enum CropGrowthStage {
 
 #[derive(Clone, Copy)]
 pub(crate) struct Hook {
-    pub(crate) target_addr: *mut std::ffi::c_void,
-    pub(crate) target_back_addr: *mut std::ffi::c_void,
-    pub(crate) detour_fn_addr: *mut std::ffi::c_void,
-    pub(crate) is_enable: bool,
+    target_addr: *mut std::ffi::c_void,
+    target_back_addr: *mut std::ffi::c_void,
+    detour_fn_addr: *mut std::ffi::c_void,
+    is_enable: bool,
 }
 
 impl Hook {
-    pub(crate) unsafe fn new() -> Self {
-        ::core::mem::zeroed()
+    pub(crate) const fn new() -> Self {
+        Self {
+            target_addr: ::core::ptr::null_mut(),
+            target_back_addr: ::core::ptr::null_mut(),
+            detour_fn_addr: ::core::ptr::null_mut(),
+            is_enable: false,
+        }
     }
 
     pub(crate) unsafe fn build_target(
@@ -333,19 +338,133 @@ impl Hook {
         self
     }
 
+    pub(crate) fn get_toggle_mut(&mut self) -> &mut bool {
+        &mut self.is_enable
+    }
+
+    pub(crate) fn get_toggle(&self) -> bool {
+        self.is_enable
+    }
+
     pub(crate) fn enable(&mut self) {
         minhook_raw::enable_hook(self.target_addr);
-        self.is_enable = true;
+        // self.is_enable = true;
     }
 
     pub(crate) fn disable(&mut self) {
         minhook_raw::disable_hook(self.target_addr);
 
-        self.is_enable = false;
+        // self.is_enable = false;
     }
 }
 
-pub(crate) unsafe fn hooks(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) {
+pub(crate) struct HookBytes {
+    target_addr: *mut ::core::ffi::c_void,
+    source: Vec<u8>,
+    patch: Vec<u8>,
+    offset: usize,
+    is_enable: bool,
+}
+
+impl HookBytes {
+    pub(crate) const fn new() -> Self {
+        Self {
+            target_addr: ::core::ptr::null_mut(),
+            source: Vec::new(),
+            patch: Vec::new(),
+            offset: 0,
+            is_enable: false,
+        }
+    }
+
+    pub(crate) unsafe fn build(
+        &mut self,
+        mod_addr: *mut ::core::ffi::c_void,
+        mod_data: &[u8],
+        pat: &str,
+        source: Vec<u8>,
+        patch: Vec<u8>,
+        offset: usize,
+    ) -> &mut Self {
+        let pat_offset = vcheat::pat_find(pat, mod_data).unwrap();
+
+        self.target_addr = mod_addr.add(pat_offset);
+        self.source = source;
+        self.offset = offset;
+        self.patch = patch;
+        self
+    }
+
+    pub(crate) unsafe fn enable(&mut self) {
+        let mbi = vcheat::internal::query_mem(self.target_addr).unwrap();
+
+        let readable = mbi.state != vcheat::types::mem_alloc::COMMIT
+            || mbi.protect == vcheat::types::mem_protect::NOACCESS;
+
+        let mut prev_protect = 0;
+
+        if !readable {
+            prev_protect = vcheat::internal::protect_mem(
+                self.target_addr,
+                0x1000,
+                vcheat::types::mem_protect::EXECUTE_READ_WRITE,
+            )
+            .unwrap();
+        }
+
+        vcheat::write_mem_t(
+            vcheat::internal::get_proc_handle(),
+            self.target_addr,
+            self.patch.as_ptr().add(self.offset),
+            self.patch.len(),
+        )
+        .unwrap();
+
+        if !readable {
+            vcheat::internal::protect_mem(self.target_addr, 0x1000, prev_protect).unwrap();
+        }
+    }
+
+    pub(crate) unsafe fn disable(&mut self) {
+        let mbi = vcheat::internal::query_mem(self.target_addr).unwrap();
+
+        let readable = mbi.state != vcheat::types::mem_alloc::COMMIT
+            || mbi.protect == vcheat::types::mem_protect::NOACCESS;
+
+        let mut prev_protect = 0;
+
+        if !readable {
+            prev_protect = vcheat::internal::protect_mem(
+                self.target_addr,
+                0x1000,
+                vcheat::types::mem_protect::EXECUTE_READ_WRITE,
+            )
+            .unwrap();
+        }
+
+        vcheat::write_mem_t(
+            vcheat::internal::get_proc_handle(),
+            self.target_addr,
+            self.source.as_ptr(),
+            self.source.len(),
+        )
+        .unwrap();
+
+        if !readable {
+            vcheat::internal::protect_mem(self.target_addr, 0x1000, prev_protect).unwrap();
+        }
+    }
+
+    pub(crate) fn get_toggle_mut(&mut self) -> &mut bool {
+        &mut self.is_enable
+    }
+
+    pub(crate) fn get_toggle(&self) -> bool {
+        self.is_enable
+    }
+}
+
+pub(crate) unsafe fn install_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) {
     crate::hook::auto_press::HOOK = Hook::new()
         .build_target(mod_addr, mod_data, crate::hook::auto_press::PAT, 6)
         .build_detour(asm::auto_press as *mut ::core::ffi::c_void, 64)
@@ -389,4 +508,14 @@ pub(crate) unsafe fn hooks(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) 
         .to_owned();
 
     crate::hook::COIN_ADDR = (crate::SANDLL_ADDR + 0x2AD192C) as *mut u32;
+
+    crate::hook::time_pause::HOOK = HookBytes::new();
+    crate::hook::time_pause::HOOK.build(
+        mod_addr,
+        mod_data,
+        crate::hook::time_pause::PAT,
+        [0x41, 0x01, 0x51, 0x04].to_vec(),
+        [0x90, 0x90, 0x90, 0x90].to_vec(),
+        0,
+    );
 }

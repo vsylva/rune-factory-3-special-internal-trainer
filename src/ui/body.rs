@@ -8,12 +8,13 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
         super::component::skill_exp_mul_toggle(ui);
 
         super::component::crop_instant_growth_toggle(ui);
+        super::component::time_pause_toggle(ui);
     }
 
     if ui.collapsing_header("农田功能", hudhook::imgui::TreeNodeFlags::empty()) {
         super::component::farm_toggle(ui);
 
-        if crate::hook::farm::TOGGLE {
+        if crate::hook::farm::HOOK.get_toggle() {
             super::component::tilth_plots_toggle(ui);
             super::component::soil_quality_toggle(ui);
             super::component::watering_plots_toggle(ui);

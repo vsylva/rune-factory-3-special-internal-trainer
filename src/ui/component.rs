@@ -9,7 +9,7 @@ pub(crate) unsafe fn set_gold(ui: &hudhook::imgui::Ui) {
         *crate::hook::COIN_ADDR += 100_000;
     }
 
-    if *crate::hook::COIN_ADDR > 100_000 {
+    if *crate::hook::COIN_ADDR > 99_999 {
         ui.same_line();
         if ui.button("-100k") {
             *crate::hook::COIN_ADDR -= 100_000;
@@ -18,11 +18,8 @@ pub(crate) unsafe fn set_gold(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn fishing_toggle(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "钓鱼自动提竿",
-        std::mem::transmute(std::ptr::addr_of_mut!(crate::hook::fishing::TOGGLE)),
-    ) {
-        if crate::hook::fishing::TOGGLE == true {
+    if ui.checkbox("钓鱼自动提竿", crate::hook::fishing::HOOK.get_toggle_mut()) {
+        if crate::hook::fishing::HOOK.get_toggle() {
             crate::hook::fishing::HOOK.enable();
             crate::hook::auto_press::HOOK.enable();
         } else {
@@ -34,11 +31,9 @@ pub(crate) unsafe fn fishing_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn walk_through_walls_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "穿墙",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::walk_through_walls::TOGGLE
-        )),
+        crate::hook::walk_through_walls::HOOK.get_toggle_mut(),
     ) {
-        if crate::hook::walk_through_walls::TOGGLE == true {
+        if crate::hook::walk_through_walls::HOOK.get_toggle() {
             crate::hook::walk_through_walls::HOOK.enable();
         } else {
             crate::hook::walk_through_walls::HOOK.disable();
@@ -48,9 +43,9 @@ pub(crate) unsafe fn walk_through_walls_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn friendship_mul_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "送礼百倍友谊",
-        std::mem::transmute(std::ptr::addr_of_mut!(crate::hook::friendship_mul::TOGGLE)),
+        crate::hook::friendship_mul::HOOK.get_toggle_mut(),
     ) {
-        if crate::hook::friendship_mul::TOGGLE == true {
+        if crate::hook::friendship_mul::HOOK.get_toggle() {
             crate::hook::friendship_mul::HOOK.enable();
         } else {
             crate::hook::friendship_mul::HOOK.disable();
@@ -61,9 +56,9 @@ pub(crate) unsafe fn friendship_mul_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn skill_exp_mul_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "百倍技能经验",
-        std::mem::transmute(std::ptr::addr_of_mut!(crate::hook::skill_exp_mul::TOGGLE)),
+        crate::hook::skill_exp_mul::HOOK.get_toggle_mut(),
     ) {
-        if crate::hook::skill_exp_mul::TOGGLE == true {
+        if crate::hook::skill_exp_mul::HOOK.get_toggle() {
             crate::hook::skill_exp_mul::HOOK.enable();
         } else {
             crate::hook::skill_exp_mul::HOOK.disable();
@@ -73,23 +68,28 @@ pub(crate) unsafe fn skill_exp_mul_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn crop_instant_growth_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "作物即时成熟",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::instant_crop_growth::TOGGLE
-        )),
+        crate::hook::instant_crop_growth::HOOK.get_toggle_mut(),
     ) {
-        if crate::hook::instant_crop_growth::TOGGLE == true {
+        if crate::hook::instant_crop_growth::HOOK.get_toggle() {
             crate::hook::instant_crop_growth::HOOK.enable();
         } else {
             crate::hook::instant_crop_growth::HOOK.disable();
         }
     }
 }
+pub(crate) unsafe fn time_pause_toggle(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("暂停时间", crate::hook::time_pause::HOOK.get_toggle_mut()) {
+        if crate::hook::time_pause::HOOK.get_toggle() {
+            crate::hook::time_pause::HOOK.enable();
+        } else {
+            crate::hook::time_pause::HOOK.disable();
+        }
+    }
+}
+
 pub(crate) unsafe fn farm_toggle(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "开启",
-        std::mem::transmute(std::ptr::addr_of_mut!(crate::hook::farm::TOGGLE)),
-    ) {
-        if crate::hook::farm::TOGGLE == true {
+    if ui.checkbox("开启", crate::hook::farm::HOOK.get_toggle_mut()) {
+        if crate::hook::farm::HOOK.get_toggle() {
             crate::hook::farm::HOOK.enable();
         } else {
             crate::hook::farm::tilth_plots::MARK = 0;
@@ -101,7 +101,6 @@ pub(crate) unsafe fn farm_toggle(ui: &hudhook::imgui::Ui) {
             crate::hook::farm::soil_quality::TOGGLE = false;
             crate::hook::farm::watering_plots::TOGGLE = false;
             crate::hook::farm::plant_plots::TOGGLE = false;
-
             crate::hook::farm::HOOK.disable();
         }
     }
@@ -110,9 +109,7 @@ pub(crate) unsafe fn farm_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn tilth_plots_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "耕作所有土地",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::farm::tilth_plots::TOGGLE
-        )),
+        &mut *std::ptr::addr_of_mut!(crate::hook::farm::tilth_plots::TOGGLE),
     ) {
         if crate::hook::farm::tilth_plots::TOGGLE == true {
             crate::hook::farm::tilth_plots::MARK = 1;
@@ -125,9 +122,7 @@ pub(crate) unsafe fn tilth_plots_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn soil_quality_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "土地状态最优",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::farm::soil_quality::TOGGLE
-        )),
+        &mut *std::ptr::addr_of_mut!(crate::hook::farm::soil_quality::TOGGLE),
     ) {
         if crate::hook::farm::soil_quality::TOGGLE {
             crate::hook::farm::soil_quality::MARK = 1;
@@ -140,9 +135,7 @@ pub(crate) unsafe fn soil_quality_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn watering_plots_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "自动灌溉",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::farm::watering_plots::TOGGLE
-        )),
+        &mut *std::ptr::addr_of_mut!(crate::hook::farm::watering_plots::TOGGLE),
     ) {
         if crate::hook::farm::watering_plots::TOGGLE {
             crate::hook::farm::watering_plots::MARK = 1;
@@ -155,9 +148,7 @@ pub(crate) unsafe fn watering_plots_toggle(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn plant_plots_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "自动种植",
-        std::mem::transmute(std::ptr::addr_of_mut!(
-            crate::hook::farm::plant_plots::TOGGLE
-        )),
+        &mut *std::ptr::addr_of_mut!(crate::hook::farm::plant_plots::TOGGLE),
     ) {
         if crate::hook::farm::plant_plots::TOGGLE {
             crate::hook::farm::plant_plots::MARK = 1;
