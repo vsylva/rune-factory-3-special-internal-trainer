@@ -1,8 +1,8 @@
 pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
     if ui.collapsing_header("功能", hudhook::imgui::TreeNodeFlags::empty()) {
         super::component::set_gold(ui);
+        super::component::set_wood(ui);
         super::component::fishing_toggle(ui);
-
         super::component::walk_through_walls_toggle(ui);
         super::component::friendship_mul_toggle(ui);
         super::component::skill_exp_mul_toggle(ui);

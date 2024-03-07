@@ -1,4 +1,4 @@
-mod body;
+mod manager;
 mod component;
 mod setting;
 
@@ -81,7 +81,7 @@ impl hudhook::ImguiRenderLoop for RenderLoop {
                 .collapsible(true)
                 .movable(true)
                 .build(|| {
-                    body::on_frame(ui);
+                    manager::on_frame(ui);
                 });
         }
     }

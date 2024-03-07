@@ -17,6 +17,25 @@ pub(crate) unsafe fn set_gold(ui: &hudhook::imgui::Ui) {
     }
 }
 
+pub(crate) unsafe fn set_wood(ui: &hudhook::imgui::Ui) {
+    ui.text("木材: ");
+
+    ui.same_line();
+    ui.text(format!("{}", *crate::hook::WOOD_ADDR));
+
+    ui.same_line();
+    if ui.button("+1000") {
+        *crate::hook::WOOD_ADDR += 1000;
+    }
+
+    if *crate::hook::WOOD_ADDR > 999 {
+        ui.same_line();
+        if ui.button("-100k") {
+            *crate::hook::WOOD_ADDR -= 1000;
+        }
+    }
+}
+
 pub(crate) unsafe fn fishing_toggle(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("钓鱼自动提竿", crate::hook::fishing::HOOK.get_toggle_mut()) {
         if crate::hook::fishing::HOOK.get_toggle() {

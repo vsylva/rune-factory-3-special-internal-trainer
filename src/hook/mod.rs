@@ -1,6 +1,7 @@
 mod asm;
 
 pub(crate) static mut COIN_ADDR: *mut u32 = ::core::ptr::null_mut();
+pub(crate) static mut WOOD_ADDR: *mut u32 = ::core::ptr::null_mut();
 
 pub(crate) mod fishing {
     // target 5 + 3
@@ -508,6 +509,7 @@ pub(crate) unsafe fn install_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: 
         .to_owned();
 
     crate::hook::COIN_ADDR = (crate::SANDLL_ADDR + 0x2AD192C) as *mut u32;
+    crate::hook::WOOD_ADDR = (crate::SANDLL_ADDR + 0x2AD1930) as *mut u32;
 
     crate::hook::time_pause::HOOK = HookBytes::new();
     crate::hook::time_pause::HOOK.build(
