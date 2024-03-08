@@ -32,8 +32,6 @@ unsafe extern "system" fn DllMain(
                 vcheat::internal::free_dll_exit_thread(h_module, 0);
             }
 
-
-
             init_hook();
             init_hudhook(h_module);
         });
@@ -57,12 +55,13 @@ unsafe fn init_hook() {
 
     minhook_raw::initialize();
 
-    crate::hook::install_hook(mod_info.addr, &mod_data);
+    crate::hook::inline::create_hook(mod_info.addr, &mod_data);
+    crate::hook::byte::create_hook(mod_info.addr, &mod_data);
 }
 
 unsafe fn init_hudhook(h_module: isize) {
     if let Err(e) = ::hudhook::Hudhook::builder()
-        .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(ui::RenderLoop)
+        .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(crate::ui::renderloop::RenderLoop)
         .with_hmodule(hudhook::windows::Win32::Foundation::HINSTANCE(h_module))
         .build()
         .apply()

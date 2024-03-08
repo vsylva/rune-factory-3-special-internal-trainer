@@ -1,5 +1,49 @@
 #[allow(unused)]
 #[inline(never)]
+pub(crate) unsafe extern "system" fn load_save() {
+    std::arch::asm!(
+        "
+    shl ax,05
+    movzx r9d,dl
+    ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!("push rax", options(nomem, nostack));
+
+    std::arch::asm!(
+    "
+    mov rax, 0x1
+    ",
+    out("rax") crate::hook::SAVE_LOAD_MARK,
+    options(nomem,nostack)
+    );
+
+    std::arch::asm!("pop rax", options(nomem, nostack));
+
+    std::arch::asm!(
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        options(nomem, nostack)
+    );
+}
+
+#[allow(unused)]
+#[inline(never)]
 pub(crate) unsafe extern "system" fn fishing() {
     std::arch::asm!(
         "movzx ecx,word ptr [rax+0x18]",
@@ -17,7 +61,7 @@ pub(crate) unsafe extern "system" fn fishing() {
     "mov dword ptr [rax],0",
     "1:",
     "cmp cx,03",
-    in("rax") crate::hook::auto_press::MARK_POINTER,
+    in("rax") crate::hook::AUTO_PRESS_MARK_POINTER,
     options(nomem,nostack)
     );
 
@@ -56,7 +100,7 @@ pub(crate) unsafe extern "system" fn auto_press() {
             "jne 0f",
             "mov dx,2",
             "0:",
-            in("rax") crate::hook::auto_press::MARK_POINTER,
+            in("rax") crate::hook::AUTO_PRESS_MARK_POINTER,
             options(nomem,nostack)
     );
 
@@ -305,11 +349,11 @@ pub(crate) unsafe extern "system" fn farm() {
         // Tilt = 2
         // Plant = 3
 
-        in("r11") crate::hook::farm::soil_quality::MARK_POINTER,
-        in("r12") crate::hook::farm::watering_plots::MARK_POINTER        ,
-        in("r13") crate::hook::farm::tilth_plots::MARK_POINTER,
-        in("r14") crate::hook::farm::plant_plots::MARK_POINTER,
-        in("r15") crate::hook::farm::plant_plots::CROP_PROP_POINTER,
+        in("r11") crate::hook::SOIL_QUALITY_MARK_POINTER,
+        in("r12") crate::hook::WATERING_PLOTS_MARK_POINTER        ,
+        in("r13") crate::hook::TILTH_PLOTS_MARK_POINTER,
+        in("r14") crate::hook::PLANT_PLOTS_MARK_POINTER,
+        in("r15") crate::hook::CROP_PROP_POINTER,
         options(nostack,nomem)
     );
 
@@ -359,7 +403,7 @@ pub(crate) unsafe extern "system" fn time() -> ! {
         lea rax, [r9+04]
         mov [r15], rax
         ",
-        in("r15") crate::hook::time::POINTER_POINTER,
+        in("r15") crate::hook::TIME_POINTER_POINTER,
         options(nomem,nostack)
     );
 

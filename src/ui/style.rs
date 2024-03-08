@@ -1,3 +1,21 @@
+pub(crate) fn set_font(ctx: &mut hudhook::imgui::Context, font_size: f32) {
+    let tf_data = hudhook::imgui::FontSource::TtfData {
+        data: include_bytes!("../../res/FZHTJW.TTF"),
+        size_pixels: font_size,
+        config: Some(hudhook::imgui::FontConfig {
+            size_pixels: font_size,
+            pixel_snap_h: true,
+            glyph_ranges: hudhook::imgui::FontGlyphRanges::from_slice(&[
+                0x0020, 0x00FF, 0x2000, 0x206F, 0x3000, 0x30FF, 0x31F0, 0x31FF, 0xFF00, 0xFFEF,
+                0xFFFD, 0xFFFD, 0x4E00, 0x9FAF, 0,
+            ]),
+            ..hudhook::imgui::FontConfig::default()
+        }),
+    };
+
+    ctx.fonts().add_font(&[tf_data]);
+}
+
 pub(crate) fn set_dark_red_style(ctx: &mut hudhook::imgui::Context) {
     let style = ctx.style_mut();
 
@@ -80,22 +98,4 @@ pub(crate) fn set_dark_red_style(ctx: &mut hudhook::imgui::Context) {
 
     sytle_colors[hudhook::imgui::sys::ImGuiCol_TitleBgCollapsed as usize] =
         [0.25, 0.2505, 0.251, 1.0];
-}
-
-pub(crate) fn set_font(ctx: &mut hudhook::imgui::Context, font_size: f32) {
-    let tf_data = hudhook::imgui::FontSource::TtfData {
-        data: include_bytes!("../../res/FZHTJW.TTF"),
-        size_pixels: font_size,
-        config: Some(hudhook::imgui::FontConfig {
-            size_pixels: font_size,
-            pixel_snap_h: true,
-            glyph_ranges: hudhook::imgui::FontGlyphRanges::from_slice(&[
-                0x0020, 0x00FF, 0x2000, 0x206F, 0x3000, 0x30FF, 0x31F0, 0x31FF, 0xFF00, 0xFFEF,
-                0xFFFD, 0xFFFD, 0x4E00, 0x9FAF, 0,
-            ]),
-            ..hudhook::imgui::FontConfig::default()
-        }),
-    };
-
-    ctx.fonts().add_font(&[tf_data]);
 }

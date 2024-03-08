@@ -16,7 +16,7 @@ https://github.com/vSylva/rune_factory_3_trainer/releases
 
 如果刚进入游戏，**角色不能移动**，将游戏窗口最小化在打开就可以了
 
-遇到 bug 可以提交issue
+遇到 bug 可以提交 issue
 
 ## 编译
 

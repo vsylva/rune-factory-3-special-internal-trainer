@@ -1,19 +1,20 @@
 mod component;
-mod draw_ui;
-mod setting;
 
-pub(crate) static mut WINDOW_HANDLE: isize = 0;
+mod draw;
+mod init;
+pub(crate) mod renderloop;
+mod style;
+
 pub(crate) static mut IS_SHOW_UI: bool = true;
 
-static mut CROP_TYPE_SELECTED: crate::hook::CropType = crate::hook::CropType::无;
-static mut CROP_TYPE_LIST: Vec<crate::hook::CropType> = Vec::new();
+static mut CROP_TYPE_SELECTED: CropType = CropType::无;
+static mut CROP_TYPE_LIST: Vec<CropType> = Vec::new();
 
-static mut CROP_LEVEL_SELECTED: crate::hook::CropLevel = crate::hook::CropLevel::LV1;
-static mut CROP_LEVEL_LIST: Vec<crate::hook::CropLevel> = Vec::new();
+static mut CROP_LEVEL_SELECTED: CropLevel = CropLevel::LV1;
+static mut CROP_LEVEL_LIST: Vec<CropLevel> = Vec::new();
 
-static mut CROP_GROWTH_STAGE_SELECTED: crate::hook::CropGrowthStage =
-    crate::hook::CropGrowthStage::一阶段;
-static mut CROP_GROWTH_STAGE_LIST: Vec<crate::hook::CropGrowthStage> = Vec::new();
+static mut CROP_GROWTH_STAGE_SELECTED: CropGrowthStage = CropGrowthStage::一阶段;
+static mut CROP_GROWTH_STAGE_LIST: Vec<CropGrowthStage> = Vec::new();
 
 static mut TIME_SECOND_SELECTED: u8 = 0;
 static mut TIME_SECOND_LIST: Vec<u8> = Vec::new();
@@ -86,115 +87,164 @@ impl Into<TimeSlowMul> for u32 {
     }
 }
 
-pub(crate) struct RenderLoop;
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
+#[repr(C)]
+pub(crate) struct CropProp {
+    pub(crate) ty: u8,
+    pub(crate) growth_stage_and_lv: u8,
+}
 
-impl hudhook::ImguiRenderLoop for RenderLoop {
-    fn initialize<'a>(
-        &'a mut self,
-        _ctx: &mut hudhook::imgui::Context,
-        _loader: hudhook::TextureLoader<'a>,
-    ) {
-        unsafe {
-            setting::set_dark_red_style(_ctx);
-            setting::set_font(_ctx, 20.0);
-            _ctx.set_ini_filename(None);
-
-            for crop_type in <crate::hook::CropType as strum::IntoEnumIterator>::iter() {
-                CROP_TYPE_LIST.push(crop_type)
-            }
-
-            for crop_level in <crate::hook::CropLevel as strum::IntoEnumIterator>::iter() {
-                CROP_LEVEL_LIST.push(crop_level)
-            }
-
-            for crop_growth_stage in
-                <crate::hook::CropGrowthStage as strum::IntoEnumIterator>::iter()
-            {
-                CROP_GROWTH_STAGE_LIST.push(crop_growth_stage)
-            }
-
-            for second in 0..60 {
-                TIME_SECOND_LIST.push(second);
-            }
-
-            for hour in 0..24 {
-                TIME_HOUR_LIST.push(hour);
-            }
-
-            for day in 1..31 {
-                TIME_DAY_LIST.push(day);
-            }
-
-            for season in <Season as strum::IntoEnumIterator>::iter() {
-                TIME_SEASON_LIST.push(season);
-            }
-
-            for year in 1..100 {
-                TIME_YEAR_LIST.push(year);
-            }
-
-            for time_slow_mul in <TimeSlowMul as strum::IntoEnumIterator>::iter() {
-                TIME_SLOW_MUL_LIST.push(time_slow_mul)
-            }
-
-            let windows_name = "Rune Factory 3 Special\0"
-                .encode_utf16()
-                .collect::<Vec<u16>>();
-
-            WINDOW_HANDLE = crate::FindWindowW(::core::ptr::null_mut(), windows_name.as_ptr());
+impl CropProp {
+    pub(crate) fn set_crop_type(&mut self, ct: CropType) {
+        if ct as u8 == 0 {
+            self.ty = 0;
         }
+        self.ty = (ct as u8) << 1;
     }
 
-    fn should_block_messages(&self, _io: &hudhook::imgui::Io) -> bool {
-        unsafe {
-            if crate::IsIconic(WINDOW_HANDLE) != 0 {
-                return false;
-            }
-
-            (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = IS_SHOW_UI;
-
-            if IS_SHOW_UI {
-                return true;
-            }
-        }
-        false
+    pub(crate) unsafe fn set_crop_growth_stage(&mut self, stage: CropGrowthStage) {
+        self.growth_stage_and_lv &= 0b0000_1111;
+        self.growth_stage_and_lv |= (stage as u8) << 4;
     }
 
-    fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
-        unsafe {
-            // VK ~
-            if is_key_down_once(0xC0) {
-                IS_SHOW_UI = !IS_SHOW_UI;
-            }
-
-            if !IS_SHOW_UI {
-                return;
-            }
-
-            ui.window(format!("符文工房3修改器\t[~]键打开/关闭菜单"))
-                .title_bar(true)
-                .size([500.0, 400.0], hudhook::imgui::Condition::FirstUseEver)
-                .resizable(true)
-                .collapsible(true)
-                .movable(true)
-                .build(|| {
-                    draw_ui::on_frame(ui);
-                });
-        }
+    pub(crate) fn set_crop_level(&mut self, level: CropLevel) {
+        self.growth_stage_and_lv &= 0b0111_0000;
+        self.growth_stage_and_lv |= level as u8;
     }
 }
 
-pub(crate) unsafe fn is_key_down_once(virtual_key_code: i32) -> bool {
-    static WAS_KEY_DOWN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Hash,
+    strum_macros::EnumIter,
+    strum_macros::Display,
+)]
+pub(crate) enum CropType {
+    无 = 0,
 
-    if (crate::GetAsyncKeyState(virtual_key_code) & 0x8000) != 0 {
-        if !WAS_KEY_DOWN.load(std::sync::atomic::Ordering::SeqCst) {
-            WAS_KEY_DOWN.store(true, std::sync::atomic::Ordering::SeqCst);
-            return true;
-        }
-    } else {
-        WAS_KEY_DOWN.store(false, std::sync::atomic::Ordering::SeqCst);
-    }
+    石头 = 1, // 可捡
+    岩石 = 2, // 可砸
+    树枝 = 3, // 可捡
+    树桩 = 4, // 可劈
+    木材 = 5, // 可砸，什么都不会出
+    毒沼 = 6, // 可砸，什么都不会出
 
-    false
+    // 矿石 = 7, // 锤子砸会闪退
+    药草 = 8,    // 可捡
+    解毒草 = 9,  // 可捡
+    黑草 = 10,   // 可捡
+    枯草 = 11,   // 可捡
+    黄草 = 14,   // 可捡
+    苦橙草 = 15, // 可捡
+
+    // 种子 = 16, // 不可捡。名字就叫 “种子
+    杂草 = 17,   // 可捡
+    季节岩 = 18, // 可砸
+    花卉 = 19,   // 可摧毁
+
+    水晶 = 20, // 可砸，出的不知道是不是buff
+
+    // 苹果 = 21, //  可砸，什么都不会出
+    // 苹果 = 22    同上
+    // 苹果 = 23    同上
+    草莓 = 24,     // Strawberry
+    卷心菜 = 25,   // Cabbage
+    樱芜菁 = 26,   // Pink Turnip
+    洋葱 = 27,     // Onion
+    托伊药草 = 28, // Toyherb
+    月落草 = 29,   // Moondrop Flower
+    樱草 = 30,     // Cherry Grass
+    灯草 = 31,     // Lamp Grass
+    青水晶 = 33,   // Blue Crystal Flower
+    金卷心菜 = 34, // Golden King Cabbage
+    少女蜜瓜 = 35, // Pink Melon
+
+    竹笋 = 36, // 可割
+
+    南瓜 = 37,     // Pumpkin
+    黄瓜 = 38,     // Cucumber
+    玉米 = 39,     // Corn
+    番茄 = 40,     // Tomato
+    茄子 = 41,     // Eggplant
+    菠萝 = 42,     // Pineapple
+    粉红猫 = 43,   // Pink Cat
+    铁千轮 = 44,   // Ironleaf
+    四叶草 = 45,   // 4-Leaf Clover
+    原之焰火 = 46, // Fireflower
+    绿水晶 = 47,   // Green Crystal Flower
+    金南瓜 = 48,   // Golden Pumpkin
+
+    蓝草 = 49, // 可捡
+    绿草 = 50, // 可捡
+    紫草 = 51, // 可捡
+    靛草 = 52, // 可捡
+
+    红叶花 = 59,     // Autumn Grass
+    剧毒蒲公英 = 60, // Pom-Pom Grass
+    红水晶 = 61,     // Red Crystal Flower
+    金马铃薯 = 62,   // Golden Potato
+    芜菁 = 63,       // Turnip
+    白萝卜 = 64,     // Radish
+    葱 = 65,         // Leek
+    白菜 = 66,       // Napa Cabbage
+    树形草 = 67,     // Noel Grass
+    白水晶 = 68,     // White Crystal Flower
+    金芜青 = 69,     // Golden Turnip
+    火热果实 = 70,   // Hot-Hot Fruit
+
+    白草 = 71, // 可捡
+               //无效 = 72  从72开始的编号都是无效的东西
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Hash,
+    strum_macros::EnumIter,
+    strum_macros::Display,
+)]
+
+pub(crate) enum CropLevel {
+    LV1 = 0,
+    LV2 = 1,
+    LV3 = 2,
+    LV4 = 3,
+    LV5 = 4,
+    LV6 = 5,
+    LV7 = 6,
+    LV8 = 7,
+    LV9 = 8,
+    LV10 = 9,
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Hash,
+    strum_macros::EnumIter,
+    strum_macros::Display,
+)]
+pub(crate) enum CropGrowthStage {
+    // 无 = 0,
+    一阶段 = 0x1,
+    二阶段 = 0x2,
+    三阶段 = 0x3,
+    四阶段 = 0x4,
+    五阶段 = 0x5,
 }

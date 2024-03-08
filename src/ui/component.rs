@@ -1,117 +1,145 @@
-pub(crate) unsafe fn set_gold(ui: &hudhook::imgui::Ui) {
-    ui.text("金币: ");
+use std::ptr::addr_of_mut;
 
-    ui.same_line();
-    ui.text(format!("{}", *crate::hook::COIN_ADDR));
+use crate::{
+    hook::{
+        COIN_ADDR,
+        COIN_LAST,
+        COIN_MAX,
+        CROP_PROP,
+        FARM_HOOK,
+        FISHING_HOOK,
+        FRIENDSHIP_MUL_HOOK,
+        INSTANT_CROP_GROWTH_HOOK,
+        PLANT_PLOTS_MARK,
+        PLANT_PLOTS_TOGGLE,
+        SKILL_EXP_MUL_HOOK,
+        SOIL_QUALITY_MARK,
+        SOIL_QUALITY_TOGGLE,
+        TILTH_PLOTS_MARK,
+        TILTH_PLOTS_TOGGLE,
+        TIME_HOOK,
+        TIME_POINTER,
+        WALK_THROUGH_WALLS_HOOK,
+        WATERING_PLOTS_MARK,
+        WATERING_PLOTS_TOGGLE,
+        WOOD_ADDR,
+        WOOD_LAST,
+        WOOD_MAX,
+    },
+    ui::{
+        CropType,
+        TimeSlowMul,
+        CROP_GROWTH_STAGE_LIST,
+        CROP_GROWTH_STAGE_SELECTED,
+        CROP_LEVEL_LIST,
+        CROP_LEVEL_SELECTED,
+        CROP_TYPE_LIST,
+        CROP_TYPE_SELECTED,
+        TIME_DAY_LIST,
+        TIME_DAY_SELECTED,
+        TIME_HOUR_LIST,
+        TIME_HOUR_SELECTED,
+        TIME_SEASON_LIST,
+        TIME_SEASON_SELECTED,
+        TIME_SECOND_LIST,
+        TIME_SECOND_SELECTED,
+        TIME_SLOW_MUL_LIST,
+        TIME_SLOW_MUL_SELECTED,
+        TIME_YEAR_LIST,
+        TIME_YEAR_SELECTED,
+    },
+};
 
-    ui.same_line();
-    if ui.button("+100k") {
-        *crate::hook::COIN_ADDR += 100_000;
+pub(crate) unsafe fn progress_bar(s: &str) {
+    static mut PROGRESS: f32 = 0.0f32;
+    static mut ANIMATE: bool = true;
+    static mut PROGRESS_DIR: f32 = 1.0f32;
+    if ANIMATE {
+        PROGRESS += PROGRESS_DIR * 0.4f32 * hudhook::imgui::sys::igGetIO().read().DeltaTime;
+        if PROGRESS >= 1.1f32 {
+            PROGRESS = 1.1f32;
+            PROGRESS_DIR *= -1.0f32;
+        }
+        if PROGRESS <= -0.1f32 {
+            PROGRESS = -0.1f32;
+            PROGRESS_DIR *= -1.0f32;
+        }
+
+        hudhook::imgui::sys::igProgressBar(
+            PROGRESS,
+            hudhook::imgui::sys::ImVec2 {
+                x: 0.0f32,
+                y: 0.0f32,
+            },
+            s.as_ptr().cast(),
+        );
     }
+}
 
-    if *crate::hook::COIN_ADDR > 99_999 {
-        ui.same_line();
-        if ui.button("-100k") {
-            *crate::hook::COIN_ADDR -= 100_000;
+pub(crate) unsafe fn set_gold(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("最高金币", &mut *addr_of_mut!(COIN_MAX)) {
+        if COIN_MAX {
+            COIN_LAST = *COIN_ADDR;
+            *COIN_ADDR = 99999999;
+        } else {
+            *COIN_ADDR = COIN_LAST;
         }
     }
 }
 
 pub(crate) unsafe fn set_wood(ui: &hudhook::imgui::Ui) {
-    ui.text("木材: ");
-
-    ui.same_line();
-    ui.text(format!("{}", *crate::hook::WOOD_ADDR));
-
-    ui.same_line();
-    if ui.button("+1000") {
-        *crate::hook::WOOD_ADDR += 1000;
-    }
-
-    if *crate::hook::WOOD_ADDR > 999 {
-        ui.same_line();
-        if ui.button("-1000") {
-            *crate::hook::WOOD_ADDR -= 1000;
+    if ui.checkbox("最高木材", &mut *addr_of_mut!(WOOD_MAX)) {
+        if WOOD_MAX {
+            WOOD_LAST = *WOOD_ADDR;
+            *WOOD_ADDR = 16383;
+        } else {
+            *WOOD_ADDR = WOOD_LAST;
         }
     }
 }
 
 pub(crate) unsafe fn fishing_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("钓鱼自动提竿", crate::hook::fishing::HOOK.get_swtich_mut()) {
-        if crate::hook::fishing::HOOK.get_swtich() {
-            crate::hook::fishing::HOOK.enable();
-            crate::hook::auto_press::HOOK.enable();
-        } else {
-            crate::hook::fishing::HOOK.disable();
-            crate::hook::auto_press::HOOK.disable();
-        }
+    if ui.checkbox("钓鱼自动提竿", FISHING_HOOK.get_swtich_mut()) {
+        FISHING_HOOK.toggle();
     }
 }
 pub(crate) unsafe fn walk_through_walls_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "穿墙",
-        crate::hook::walk_through_walls::HOOK.get_swtich_mut(),
-    ) {
-        if crate::hook::walk_through_walls::HOOK.get_swtich() {
-            crate::hook::walk_through_walls::HOOK.enable();
-        } else {
-            crate::hook::walk_through_walls::HOOK.disable();
-        }
+    if ui.checkbox("穿墙", WALK_THROUGH_WALLS_HOOK.get_swtich_mut()) {
+        WALK_THROUGH_WALLS_HOOK.toggle()
     }
 }
 pub(crate) unsafe fn friendship_mul_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "送礼百倍友谊",
-        crate::hook::friendship_mul::HOOK.get_swtich_mut(),
-    ) {
-        if crate::hook::friendship_mul::HOOK.get_swtich() {
-            crate::hook::friendship_mul::HOOK.enable();
-        } else {
-            crate::hook::friendship_mul::HOOK.disable();
-        }
+    if ui.checkbox("送礼百倍友谊", FRIENDSHIP_MUL_HOOK.get_swtich_mut()) {
+        FRIENDSHIP_MUL_HOOK.toggle()
     }
 }
 
 pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "百倍技能经验",
-        crate::hook::skill_exp_mul::HOOK.get_swtich_mut(),
-    ) {
-        if crate::hook::skill_exp_mul::HOOK.get_swtich() {
-            crate::hook::skill_exp_mul::HOOK.enable();
-        } else {
-            crate::hook::skill_exp_mul::HOOK.disable();
-        }
+    if ui.checkbox("百倍技能经验", SKILL_EXP_MUL_HOOK.get_swtich_mut()) {
+        SKILL_EXP_MUL_HOOK.toggle()
     }
 }
 pub(crate) unsafe fn crop_instant_growth_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "作物即时成熟",
-        crate::hook::instant_crop_growth::HOOK.get_swtich_mut(),
-    ) {
-        if crate::hook::instant_crop_growth::HOOK.get_swtich() {
-            crate::hook::instant_crop_growth::HOOK.enable();
-        } else {
-            crate::hook::instant_crop_growth::HOOK.disable();
-        }
+    if ui.checkbox("作物即时成熟", INSTANT_CROP_GROWTH_HOOK.get_swtich_mut()) {
+        INSTANT_CROP_GROWTH_HOOK.toggle()
     }
 }
 
 pub(crate) unsafe fn farm_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启", crate::hook::farm::HOOK.get_swtich_mut()) {
-        if crate::hook::farm::HOOK.get_swtich() {
-            crate::hook::farm::HOOK.enable();
+    if ui.checkbox("开启", FARM_HOOK.get_swtich_mut()) {
+        if FARM_HOOK.get_swtich() {
+            FARM_HOOK.enable();
         } else {
-            crate::hook::farm::tilth_plots::MARK = 0;
-            crate::hook::farm::soil_quality::MARK = 0;
-            crate::hook::farm::watering_plots::MARK = 0;
-            crate::hook::farm::plant_plots::MARK = 0;
+            FARM_HOOK.disable();
+            TILTH_PLOTS_MARK = 0;
+            SOIL_QUALITY_MARK = 0;
+            WATERING_PLOTS_MARK = 0;
+            PLANT_PLOTS_MARK = 0;
 
-            crate::hook::farm::tilth_plots::TOGGLE = false;
-            crate::hook::farm::soil_quality::TOGGLE = false;
-            crate::hook::farm::watering_plots::TOGGLE = false;
-            crate::hook::farm::plant_plots::TOGGLE = false;
-            crate::hook::farm::HOOK.disable();
+            TILTH_PLOTS_TOGGLE = false;
+            SOIL_QUALITY_TOGGLE = false;
+            WATERING_PLOTS_TOGGLE = false;
+            PLANT_PLOTS_TOGGLE = false;
         }
     }
 }
@@ -119,12 +147,12 @@ pub(crate) unsafe fn farm_swtich(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn tilth_plots_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "耕作所有土地",
-        &mut *std::ptr::addr_of_mut!(crate::hook::farm::tilth_plots::TOGGLE),
+        &mut *std::ptr::addr_of_mut!(TILTH_PLOTS_TOGGLE),
     ) {
-        if crate::hook::farm::tilth_plots::TOGGLE == true {
-            crate::hook::farm::tilth_plots::MARK = 1;
+        if TILTH_PLOTS_TOGGLE {
+            TILTH_PLOTS_MARK = 1;
         } else {
-            crate::hook::farm::tilth_plots::MARK = 0;
+            TILTH_PLOTS_MARK = 0;
         }
     }
 }
@@ -132,12 +160,12 @@ pub(crate) unsafe fn tilth_plots_swtich(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn soil_quality_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "土地状态最优",
-        &mut *std::ptr::addr_of_mut!(crate::hook::farm::soil_quality::TOGGLE),
+        &mut *std::ptr::addr_of_mut!(SOIL_QUALITY_TOGGLE),
     ) {
-        if crate::hook::farm::soil_quality::TOGGLE {
-            crate::hook::farm::soil_quality::MARK = 1;
+        if SOIL_QUALITY_TOGGLE {
+            SOIL_QUALITY_MARK = 1;
         } else {
-            crate::hook::farm::soil_quality::MARK = 0;
+            SOIL_QUALITY_MARK = 0;
         }
     }
 }
@@ -145,42 +173,39 @@ pub(crate) unsafe fn soil_quality_swtich(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn watering_plots_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox(
         "自动灌溉",
-        &mut *std::ptr::addr_of_mut!(crate::hook::farm::watering_plots::TOGGLE),
+        &mut *std::ptr::addr_of_mut!(WATERING_PLOTS_TOGGLE),
     ) {
-        if crate::hook::farm::watering_plots::TOGGLE {
-            crate::hook::farm::watering_plots::MARK = 1;
+        if WATERING_PLOTS_TOGGLE {
+            WATERING_PLOTS_MARK = 1;
         } else {
-            crate::hook::farm::watering_plots::MARK = 0;
+            WATERING_PLOTS_MARK = 0;
         }
     }
 }
 
 pub(crate) unsafe fn plant_plots_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox(
-        "自动种植",
-        &mut *std::ptr::addr_of_mut!(crate::hook::farm::plant_plots::TOGGLE),
-    ) {
-        if crate::hook::farm::plant_plots::TOGGLE {
-            crate::hook::farm::plant_plots::MARK = 1;
+    if ui.checkbox("自动种植", &mut *std::ptr::addr_of_mut!(PLANT_PLOTS_TOGGLE)) {
+        if PLANT_PLOTS_TOGGLE {
+            PLANT_PLOTS_MARK = 1;
         } else {
-            crate::hook::farm::plant_plots::MARK = 0;
+            PLANT_PLOTS_MARK = 0;
         }
     }
 }
 
 pub(crate) unsafe fn crop_type_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("种子类型", super::CROP_TYPE_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::CROP_TYPE_LIST) {
-            if super::CROP_TYPE_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("种子类型", CROP_TYPE_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(CROP_TYPE_LIST) {
+            if CROP_TYPE_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::CROP_TYPE_SELECTED == *current)
+                .selected(CROP_TYPE_SELECTED == *current)
                 .build()
             {
-                super::CROP_TYPE_SELECTED = *current;
+                CROP_TYPE_SELECTED = *current;
             }
         }
         cb.end();
@@ -188,23 +213,23 @@ pub(crate) unsafe fn crop_type_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置类型") {
-        crate::hook::farm::plant_plots::CROP_PROP.set_crop_type(super::CROP_TYPE_SELECTED);
+        CROP_PROP.set_crop_type(CROP_TYPE_SELECTED);
     }
 }
 
 pub(crate) unsafe fn crop_level_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("种子等级", super::CROP_LEVEL_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of!(super::CROP_LEVEL_LIST) {
-            if super::CROP_LEVEL_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("种子等级", CROP_LEVEL_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of!(CROP_LEVEL_LIST) {
+            if CROP_LEVEL_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::CROP_LEVEL_SELECTED == *current)
+                .selected(CROP_LEVEL_SELECTED == *current)
                 .build()
             {
-                super::CROP_LEVEL_SELECTED = *current;
+                CROP_LEVEL_SELECTED = *current;
             }
         }
         cb.end();
@@ -212,23 +237,22 @@ pub(crate) unsafe fn crop_level_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置等级") {
-        crate::hook::farm::plant_plots::CROP_PROP.set_crop_level(super::CROP_LEVEL_SELECTED);
+        CROP_PROP.set_crop_level(CROP_LEVEL_SELECTED);
     }
 }
 pub(crate) unsafe fn crop_growth_stage_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("成长阶段", super::CROP_GROWTH_STAGE_SELECTED.to_string())
-    {
-        for current in &*::core::ptr::addr_of_mut!(super::CROP_GROWTH_STAGE_LIST) {
-            if super::CROP_GROWTH_STAGE_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("成长阶段", CROP_GROWTH_STAGE_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(CROP_GROWTH_STAGE_LIST) {
+            if CROP_GROWTH_STAGE_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::CROP_GROWTH_STAGE_SELECTED == *current)
+                .selected(CROP_GROWTH_STAGE_SELECTED == *current)
                 .build()
             {
-                super::CROP_GROWTH_STAGE_SELECTED = *current;
+                CROP_GROWTH_STAGE_SELECTED = *current;
             }
         }
         cb.end();
@@ -236,41 +260,36 @@ pub(crate) unsafe fn crop_growth_stage_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置阶段") {
-        crate::hook::farm::plant_plots::CROP_PROP
-            .set_crop_growth_stage(super::CROP_GROWTH_STAGE_SELECTED);
+        CROP_PROP.set_crop_growth_stage(CROP_GROWTH_STAGE_SELECTED);
     }
 }
 
 pub(crate) unsafe fn clear_crop(ui: &hudhook::imgui::Ui) {
     if ui.button("清除农田作物") {
-        super::CROP_TYPE_SELECTED = crate::hook::CropType::无;
-        crate::hook::farm::plant_plots::CROP_PROP.set_crop_type(crate::hook::CropType::无);
+        CROP_TYPE_SELECTED = CropType::无;
+        CROP_PROP.set_crop_type(CropType::无);
     }
 }
 
 pub(crate) unsafe fn time_manager_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启", crate::hook::time::HOOK.get_swtich_mut()) {
-        if crate::hook::time::HOOK.get_swtich() {
-            crate::hook::time::HOOK.enable();
-        } else {
-            crate::hook::time::HOOK.disable();
-        }
+    if ui.checkbox("开启", TIME_HOOK.get_swtich_mut()) {
+        TIME_HOOK.toggle();
     }
 }
 
 pub(crate) unsafe fn time_second_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("秒", super::TIME_SECOND_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_SECOND_LIST) {
-            if super::TIME_SECOND_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("秒", TIME_SECOND_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_SECOND_LIST) {
+            if TIME_SECOND_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_SECOND_SELECTED == *current)
+                .selected(TIME_SECOND_SELECTED == *current)
                 .build()
             {
-                super::TIME_SECOND_SELECTED = *current;
+                TIME_SECOND_SELECTED = *current;
             }
         }
         cb.end();
@@ -278,23 +297,23 @@ pub(crate) unsafe fn time_second_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置秒数") {
-        (*crate::hook::time::POINTER).set_second(super::TIME_SECOND_SELECTED);
+        (*TIME_POINTER).set_second(TIME_SECOND_SELECTED);
     }
 }
 
 pub(crate) unsafe fn time_hour_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("小时", super::TIME_HOUR_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_HOUR_LIST) {
-            if super::TIME_HOUR_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("小时", TIME_HOUR_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_HOUR_LIST) {
+            if TIME_HOUR_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_HOUR_SELECTED == *current)
+                .selected(TIME_HOUR_SELECTED == *current)
                 .build()
             {
-                super::TIME_HOUR_SELECTED = *current;
+                TIME_HOUR_SELECTED = *current;
             }
         }
         cb.end();
@@ -302,23 +321,23 @@ pub(crate) unsafe fn time_hour_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置小时数") {
-        (*crate::hook::time::POINTER).set_hour(super::TIME_HOUR_SELECTED);
+        (*TIME_POINTER).set_hour(TIME_HOUR_SELECTED);
     }
 }
 
 pub(crate) unsafe fn time_day_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("天", super::TIME_DAY_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_DAY_LIST) {
-            if super::TIME_DAY_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("天", TIME_DAY_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_DAY_LIST) {
+            if TIME_DAY_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_DAY_SELECTED == *current)
+                .selected(TIME_DAY_SELECTED == *current)
                 .build()
             {
-                super::TIME_DAY_SELECTED = *current;
+                TIME_DAY_SELECTED = *current;
             }
         }
         cb.end();
@@ -326,23 +345,23 @@ pub(crate) unsafe fn time_day_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置天数") {
-        (*crate::hook::time::POINTER).set_day(super::TIME_DAY_SELECTED);
+        (*TIME_POINTER).set_day(TIME_DAY_SELECTED);
     }
 }
 
 pub(crate) unsafe fn time_season_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("季节", super::TIME_SEASON_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_SEASON_LIST) {
-            if super::TIME_SEASON_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("季节", TIME_SEASON_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_SEASON_LIST) {
+            if TIME_SEASON_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_SEASON_SELECTED == *current)
+                .selected(TIME_SEASON_SELECTED == *current)
                 .build()
             {
-                super::TIME_SEASON_SELECTED = *current;
+                TIME_SEASON_SELECTED = *current;
             }
         }
         cb.end();
@@ -350,23 +369,23 @@ pub(crate) unsafe fn time_season_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置季节") {
-        (*crate::hook::time::POINTER).set_season(super::TIME_SEASON_SELECTED);
+        (*TIME_POINTER).set_season(TIME_SEASON_SELECTED as u8);
     }
 }
 
 pub(crate) unsafe fn time_year_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("年", super::TIME_YEAR_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_YEAR_LIST) {
-            if super::TIME_YEAR_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("年", TIME_YEAR_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_YEAR_LIST) {
+            if TIME_YEAR_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_YEAR_SELECTED == *current)
+                .selected(TIME_YEAR_SELECTED == *current)
                 .build()
             {
-                super::TIME_YEAR_SELECTED = *current;
+                TIME_YEAR_SELECTED = *current;
             }
         }
         cb.end();
@@ -374,23 +393,23 @@ pub(crate) unsafe fn time_year_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置年") {
-        (*crate::hook::time::POINTER).set_year(super::TIME_YEAR_SELECTED);
+        (*TIME_POINTER).set_year(TIME_YEAR_SELECTED);
     }
 }
 
 pub(crate) unsafe fn time_slow_mul_set(ui: &hudhook::imgui::Ui) {
-    if let Some(cb) = ui.begin_combo("流速", super::TIME_SLOW_MUL_SELECTED.to_string()) {
-        for current in &*::core::ptr::addr_of_mut!(super::TIME_SLOW_MUL_LIST) {
-            if super::TIME_SLOW_MUL_SELECTED == *current {
+    if let Some(cb) = ui.begin_combo("流速", TIME_SLOW_MUL_SELECTED.to_string()) {
+        for current in &*::core::ptr::addr_of_mut!(TIME_SLOW_MUL_LIST) {
+            if TIME_SLOW_MUL_SELECTED == *current {
                 ui.set_item_default_focus();
             }
 
             if ui
                 .selectable_config(current.to_string())
-                .selected(super::TIME_SLOW_MUL_SELECTED == *current)
+                .selected(TIME_SLOW_MUL_SELECTED == *current)
                 .build()
             {
-                super::TIME_SLOW_MUL_SELECTED = *current;
+                TIME_SLOW_MUL_SELECTED = *current;
             }
         }
         cb.end();
@@ -398,20 +417,20 @@ pub(crate) unsafe fn time_slow_mul_set(ui: &hudhook::imgui::Ui) {
 
     ui.same_line();
     if ui.button("设置流速") {
-        (*crate::hook::time::POINTER).set_slow_mul(super::TIME_SLOW_MUL_SELECTED);
+        (*TIME_POINTER).set_slow_mul(TIME_SLOW_MUL_SELECTED as u32);
     }
 }
 
 pub(crate) unsafe fn time_pause(ui: &hudhook::imgui::Ui) {
     if ui.button("暂停时间") {
-        (*crate::hook::time::POINTER).set_slow_mul(super::TIME_SLOW_MUL_SELECTED);
-        super::TIME_SLOW_MUL_SELECTED = super::TimeSlowMul::暂停时间;
+        (*TIME_POINTER).set_slow_mul(TIME_SLOW_MUL_SELECTED as u32);
+        TIME_SLOW_MUL_SELECTED = TimeSlowMul::暂停时间;
     }
 }
 
 pub(crate) unsafe fn time_default(ui: &hudhook::imgui::Ui) {
     if ui.button("恢复时间") {
-        (*crate::hook::time::POINTER).set_slow_mul(super::TimeSlowMul::默认);
-        super::TIME_SLOW_MUL_SELECTED = super::TimeSlowMul::默认;
+        (*TIME_POINTER).set_slow_mul(TimeSlowMul::默认 as u32);
+        TIME_SLOW_MUL_SELECTED = TimeSlowMul::默认;
     }
 }
