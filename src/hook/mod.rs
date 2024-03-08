@@ -44,26 +44,18 @@ pub(crate) static mut FARM_HOOK: crate::hook::inline::Hook = unsafe { ::core::me
 
 pub(crate) static mut SOIL_QUALITY_TOGGLE: bool = false;
 pub(crate) static mut SOIL_QUALITY_MARK: i64 = 0;
-pub(crate) static mut SOIL_QUALITY_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(SOIL_QUALITY_MARK) } as *const i64;
 
 pub(crate) static mut WATERING_PLOTS_TOGGLE: bool = false;
 pub(crate) static mut WATERING_PLOTS_MARK: i64 = 0;
-pub(crate) static mut WATERING_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(WATERING_PLOTS_MARK) } as *const i64;
 
 pub(crate) static mut TILTH_PLOTS_TOGGLE: bool = false;
 pub(crate) static mut TILTH_PLOTS_MARK: i64 = 0;
-pub(crate) static mut TILTH_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(TILTH_PLOTS_MARK) } as *const i64;
 
 pub(crate) static mut PLANT_PLOTS_TOGGLE: bool = false;
 pub(crate) static mut PLANT_PLOTS_MARK: i64 = 0;
-pub(crate) static mut PLANT_PLOTS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(PLANT_PLOTS_MARK) } as *const i64;
 pub(crate) static mut CROP_PROP: crate::ui::CropProp = crate::ui::CropProp {
-    ty: 0,
-    growth_stage_and_lv: 0x10,
+    type_: 0,
+    stage_and_lv: 0x10,
 };
 pub(crate) static mut CROP_PROP_POINTER: *const crate::ui::CropProp =
     unsafe { std::ptr::addr_of!(CROP_PROP) } as *const crate::ui::CropProp;

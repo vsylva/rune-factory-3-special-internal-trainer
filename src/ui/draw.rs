@@ -60,7 +60,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
     }
 
     if ui.collapsing_header("时间", hudhook::imgui::TreeNodeFlags::empty()) {
-        crate::ui::component::time_manager_swtich(ui);
+        crate::ui::component::time_swtich(ui);
 
         if TIME_HOOK.get_swtich() {
             super::component::time_second_set(ui);

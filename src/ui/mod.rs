@@ -90,26 +90,26 @@ impl Into<TimeSlowMul> for u32 {
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 #[repr(C)]
 pub(crate) struct CropProp {
-    pub(crate) ty: u8,
-    pub(crate) growth_stage_and_lv: u8,
+    pub(crate) type_: u8,
+    pub(crate) stage_and_lv: u8,
 }
 
 impl CropProp {
     pub(crate) fn set_crop_type(&mut self, ct: CropType) {
         if ct as u8 == 0 {
-            self.ty = 0;
+            self.type_ = 0;
         }
-        self.ty = (ct as u8) << 1;
+        self.type_ = (ct as u8) << 1;
     }
 
     pub(crate) unsafe fn set_crop_growth_stage(&mut self, stage: CropGrowthStage) {
-        self.growth_stage_and_lv &= 0b0000_1111;
-        self.growth_stage_and_lv |= (stage as u8) << 4;
+        self.stage_and_lv &= 0b0000_1111;
+        self.stage_and_lv |= (stage as u8) << 4;
     }
 
     pub(crate) fn set_crop_level(&mut self, level: CropLevel) {
-        self.growth_stage_and_lv &= 0b0111_0000;
-        self.growth_stage_and_lv |= level as u8;
+        self.stage_and_lv &= 0b0111_0000;
+        self.stage_and_lv |= level as u8;
     }
 }
 

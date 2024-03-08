@@ -92,14 +92,6 @@ impl Hook {
         self.is_enable
     }
 
-    pub(crate) fn toggle(&mut self) {
-        if self.is_enable {
-            minhook_raw::enable_hook(self.target_addr);
-        } else {
-            minhook_raw::disable_hook(self.target_addr);
-        }
-    }
-
     pub(crate) fn enable(&mut self) {
         minhook_raw::enable_hook(self.target_addr);
     }

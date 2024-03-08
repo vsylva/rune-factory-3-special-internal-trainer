@@ -112,28 +112,44 @@ pub(crate) unsafe fn fishing_swtich(ui: &hudhook::imgui::Ui) {
 }
 pub(crate) unsafe fn walk_through_walls_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("穿墙", WALK_THROUGH_WALLS_HOOK.get_swtich_mut()) {
-        WALK_THROUGH_WALLS_HOOK.toggle()
+        if WALK_THROUGH_WALLS_HOOK.get_swtich() {
+            WALK_THROUGH_WALLS_HOOK.enable()
+        } else {
+            WALK_THROUGH_WALLS_HOOK.disable()
+        }
     }
 }
 pub(crate) unsafe fn friendship_mul_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("送礼百倍友谊", FRIENDSHIP_MUL_HOOK.get_swtich_mut()) {
-        FRIENDSHIP_MUL_HOOK.toggle()
+        if FRIENDSHIP_MUL_HOOK.get_swtich() {
+            FRIENDSHIP_MUL_HOOK.enable()
+        } else {
+            FRIENDSHIP_MUL_HOOK.disable()
+        }
     }
 }
 
 pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("百倍技能经验", SKILL_EXP_MUL_HOOK.get_swtich_mut()) {
-        SKILL_EXP_MUL_HOOK.toggle()
+        if SKILL_EXP_MUL_HOOK.get_swtich() {
+            SKILL_EXP_MUL_HOOK.enable()
+        } else {
+            SKILL_EXP_MUL_HOOK.disable()
+        }
     }
 }
 pub(crate) unsafe fn crop_instant_growth_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("作物即时成熟", INSTANT_CROP_GROWTH_HOOK.get_swtich_mut()) {
-        INSTANT_CROP_GROWTH_HOOK.toggle()
+        if INSTANT_CROP_GROWTH_HOOK.get_swtich() {
+            INSTANT_CROP_GROWTH_HOOK.enable()
+        } else {
+            INSTANT_CROP_GROWTH_HOOK.disable()
+        }
     }
 }
 
 pub(crate) unsafe fn farm_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启", FARM_HOOK.get_swtich_mut()) {
+    if ui.checkbox("开启农田面板", FARM_HOOK.get_swtich_mut()) {
         if FARM_HOOK.get_swtich() {
             FARM_HOOK.enable();
         } else {
@@ -278,9 +294,13 @@ pub(crate) unsafe fn clear_crop(ui: &hudhook::imgui::Ui) {
     }
 }
 
-pub(crate) unsafe fn time_manager_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启", TIME_HOOK.get_swtich_mut()) {
-        TIME_HOOK.toggle();
+pub(crate) unsafe fn time_swtich(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("开启时间面板", TIME_HOOK.get_swtich_mut()) {
+        if TIME_HOOK.get_swtich() {
+            TIME_HOOK.enable();
+        } else {
+            TIME_HOOK.disable();
+        }
     }
 }
 

@@ -389,55 +389,87 @@ pub(crate) unsafe extern "system" fn farm() {
 
     std::arch::asm!(
         "
-        cmp dword ptr [r11],0
+        cmp r11,0
         je 0f
-          mov rax, 0x00
-          mov eax, dword ptr [rbx+0x04]
-          or eax, 0x0038003E
-          xor eax, 0x0038000E
-          mov [rbx+04], eax
+
+        mov rax, 0x00
+        mov eax, dword ptr [rbx+0x04]
+        or eax, 0x0038003E
+        xor eax, 0x0038000E
+        mov [rbx+04], eax
 
         0:
-        cmp dword ptr [r12],0
+        ",
+        in("r11") crate::hook::SOIL_QUALITY_MARK,
+        options(nostack,nomem)
+    );
+
+    std::arch::asm!(
+        "
+        cmp r12,0
         je 1f
-          mov rax, 0x00
-          mov al, byte ptr[rbx + 0x03]
-          or al, 0x10
-          and al, 0xFB
-          mov byte ptr [rbx + 0x03], al
+
+        mov rax, 0x00
+        mov al, byte ptr[rbx + 0x03]
+        or al, 0x10
+        and al, 0xFB
+        mov byte ptr [rbx + 0x03], al
 
         1:
-        cmp dword ptr [r13],0
+        ",
+        in("r12") crate::hook::WATERING_PLOTS_MARK       ,
+        options(nostack,nomem)
+    );
+
+    std::arch::asm!(
+        "
+        cmp r13,  0
         je 2f
-          mov rax, 0x00
-          mov al, byte ptr [rbx + 0x03]
-          and al, 0x08
-          cmp al, 0x08
+
+        mov rax, 0x00
+        mov al, byte ptr [rbx + 0x03]
+        and al, 0x08
+        cmp al, 0x08
         je 2f
-          mov al, byte ptr[rbx + 0x03]
-          or al, 0x08
-          mov byte ptr [rbx+0x03], al
-          mov byte ptr [rbx], 0x00
+
+        mov al, byte ptr[rbx + 0x03]
+        or al, 0x08
+        mov byte ptr [rbx+0x03], al
+        mov byte ptr [rbx], 0x00
 
         2:
-        cmp dword ptr [r14],0
+        ",
+        in("r13") crate::hook::TILTH_PLOTS_MARK      ,
+        options(nostack,nomem)
+    );
+
+    std::arch::asm!(
+        "
+        cmp r14,0
         je 3f
-          mov rax, 0x00
-          mov al, byte ptr [rbx + 0x03]
-          and al, 0x08
-          cmp al, 0x08
+
+        mov rax, 0x00
+        mov al, byte ptr [rbx + 0x03]
+        and al, 0x08
+        cmp al, 0x08
+       ",
+
+
+        in("r14") crate::hook::PLANT_PLOTS_MARK,
+
+        options(nostack,nomem)
+    );
+
+    std::arch::asm!(
+        "
         jne 3f
-          mov rax, 0x00
-          mov ax, word ptr [r15]
-          mov word ptr [rbx + 00], ax
+
+        mov rax, 0x00
+        mov ax, word ptr [r15]
+        mov word ptr [rbx + 00], ax
 
         3:
         ",
-
-        in("r11") crate::hook::SOIL_QUALITY_MARK_POINTER,
-        in("r12") crate::hook::WATERING_PLOTS_MARK_POINTER        ,
-        in("r13") crate::hook::TILTH_PLOTS_MARK_POINTER,
-        in("r14") crate::hook::PLANT_PLOTS_MARK_POINTER,
         in("r15") crate::hook::CROP_PROP_POINTER,
         options(nostack,nomem)
     );
@@ -485,8 +517,13 @@ pub(crate) unsafe extern "system" fn farm() {
 
 #[allow(unused)]
 #[inline(never)]
-pub(crate) unsafe extern "system" fn time() -> ! {
-    std::arch::asm!("push rax", options(nostack, nomem));
+pub(crate) unsafe extern "system" fn time(){
+    std::arch::asm!(
+        "
+        push rax
+        ",
+        options(nostack, nomem)
+    );
 
     std::arch::asm!(
         "
@@ -497,8 +534,13 @@ pub(crate) unsafe extern "system" fn time() -> ! {
         options(nomem,nostack)
     );
 
-    std::arch::asm!("pop rax", options(nostack, nomem));
-    std::arch::asm!("pop r15", options(nostack, nomem));
+    std::arch::asm!(
+        "
+        pop rax
+        pop r15
+        ",
+        options(nostack, nomem)
+    );
 
     std::arch::asm!(
         "
