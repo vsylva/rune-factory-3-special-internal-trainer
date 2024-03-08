@@ -2,6 +2,7 @@ use std::ptr::addr_of_mut;
 
 use crate::{
     hook::{
+        AUTO_PRESS_HOOK,
         COIN_ADDR,
         COIN_LAST,
         COIN_MAX,
@@ -100,7 +101,13 @@ pub(crate) unsafe fn set_wood(ui: &hudhook::imgui::Ui) {
 
 pub(crate) unsafe fn fishing_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("钓鱼自动提竿", FISHING_HOOK.get_swtich_mut()) {
-        FISHING_HOOK.toggle();
+        if FISHING_HOOK.get_swtich() {
+            FISHING_HOOK.enable();
+            AUTO_PRESS_HOOK.enable();
+        } else {
+            FISHING_HOOK.disable();
+            AUTO_PRESS_HOOK.disable();
+        }
     }
 }
 pub(crate) unsafe fn walk_through_walls_swtich(ui: &hudhook::imgui::Ui) {

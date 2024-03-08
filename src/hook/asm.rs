@@ -46,26 +46,52 @@ pub(crate) unsafe extern "system" fn load_save() {
 #[inline(never)]
 pub(crate) unsafe extern "system" fn fishing() {
     std::arch::asm!(
-        "movzx ecx,word ptr [rax+0x18]",
-        "cmp cx, 05",
+        "
+        movzx ecx,word ptr [rax+0x18]
+        cmp cx, 05
+        ",
         options(nomem, nostack)
     );
 
-    std::arch::asm!("push rax", options(nomem, nostack));
-
     std::arch::asm!(
-    "je 0f",
-    "mov dword ptr [rax],1",
-    "jmp 1f",
-    "0:",
-    "mov dword ptr [rax],0",
-    "1:",
-    "cmp cx,03",
-    in("rax") crate::hook::AUTO_PRESS_MARK_POINTER,
-    options(nomem,nostack)
+        "
+        push rax
+        ",
+        options(nomem, nostack)
     );
 
-    std::arch::asm!("pop rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        je 0f
+        mov rax, 1
+        ",
+        out("rax") crate::hook::AUTO_PRESS_MARK,
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "
+        jmp 1f
+        0:
+        mov rax,0
+        ",
+        out("rax") crate::hook::AUTO_PRESS_MARK,
+        options(nomem, nostack));
+
+    std::arch::asm!(
+        "
+        1:
+        cmp cx,03
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "
+        pop rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "nop",
@@ -91,20 +117,44 @@ pub(crate) unsafe extern "system" fn fishing() {
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn auto_press() {
-    std::arch::asm!("not dx", "and dx,ax", options(nomem, nostack));
-
-    std::arch::asm!("push rax", options(nomem, nostack));
-
     std::arch::asm!(
-            "cmp dword ptr [rax],1",
-            "jne 0f",
-            "mov dx,2",
-            "0:",
-            in("rax") crate::hook::AUTO_PRESS_MARK_POINTER,
-            options(nomem,nostack)
+        "
+        not dx
+        and dx,ax
+        ",
+        options(nomem, nostack)
     );
 
-    std::arch::asm!("pop rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        push rax
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "
+        cmp rax, 1
+        ",
+        in("rax") crate::hook::AUTO_PRESS_MARK,
+        options(nomem,nostack)
+    );
+
+    std::arch::asm!(
+        "
+        jne 0f
+        mov dx,2
+        0:
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "
+        pop rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "nop",
@@ -130,15 +180,25 @@ pub(crate) unsafe extern "system" fn auto_press() {
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn walk_through_walls() {
-    std::arch::asm!(" mov rsi,rdx", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        mov rsi, rdx
+        ",
+        options(nomem, nostack)
+    );
 
-    std::arch::asm!("push rax", options(nomem, nostack));
-    std::arch::asm!("push rcx", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        push rax
+        push rcx
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "
         mov rax, [rax]
-        mov rcx,[rax + 0x311F78]
+        mov rcx, [rax + 0x311F78]
         lea rax, [rcx]
         cmp rbx, rax
         ",
@@ -146,8 +206,13 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
         options(nomem, nostack)
     );
 
-    std::arch::asm!("pop rcx", options(nomem, nostack));
-    std::arch::asm!("pop rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        pop rcx
+        pop rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "
@@ -182,7 +247,12 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn friendship_mul() {
-    std::arch::asm!("push rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        push rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "
@@ -194,7 +264,12 @@ pub(crate) unsafe extern "system" fn friendship_mul() {
         options(nomem, nostack)
     );
 
-    std::arch::asm!("pop rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        pop rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "nop",
@@ -256,7 +331,12 @@ pub(crate) unsafe extern "system" fn crop_instant_growth() {
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn skill_exp_mul() {
-    std::arch::asm!("push rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        push rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "
@@ -268,7 +348,12 @@ pub(crate) unsafe extern "system" fn skill_exp_mul() {
         options(nomem, nostack)
     );
 
-    std::arch::asm!("pop rax", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        pop rax
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "nop",
@@ -294,8 +379,13 @@ pub(crate) unsafe extern "system" fn skill_exp_mul() {
 #[allow(unused)]
 #[inline(never)]
 pub(crate) unsafe extern "system" fn farm() {
-    std::arch::asm!("push rax", options(nomem, nostack));
-    std::arch::asm!("push r11", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        push rax
+        push r11
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "
@@ -344,11 +434,6 @@ pub(crate) unsafe extern "system" fn farm() {
         3:
         ",
 
-        // SoilQuality = 0
-        // WateringPlots = 1
-        // Tilt = 2
-        // Plant = 3
-
         in("r11") crate::hook::SOIL_QUALITY_MARK_POINTER,
         in("r12") crate::hook::WATERING_PLOTS_MARK_POINTER        ,
         in("r13") crate::hook::TILTH_PLOTS_MARK_POINTER,
@@ -357,12 +442,17 @@ pub(crate) unsafe extern "system" fn farm() {
         options(nostack,nomem)
     );
 
-    std::arch::asm!("pop r11", options(nomem, nostack));
-    std::arch::asm!("pop rax", options(nomem, nostack));
-    std::arch::asm!("pop r12", options(nomem, nostack));
-    std::arch::asm!("pop r13", options(nomem, nostack));
-    std::arch::asm!("pop r14", options(nomem, nostack));
-    std::arch::asm!("pop r15", options(nomem, nostack));
+    std::arch::asm!(
+        "
+        pop r11
+        pop rax
+        pop r12
+        pop r13
+        pop r14
+        pop r15
+        ",
+        options(nomem, nostack)
+    );
 
     std::arch::asm!(
         "

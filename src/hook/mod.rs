@@ -22,8 +22,6 @@ pub(crate) static mut FISHING_HOOK: crate::hook::inline::Hook = unsafe { ::core:
 // size 25
 pub(crate) static mut AUTO_PRESS_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 pub(crate) static mut AUTO_PRESS_MARK: i64 = 0;
-pub(crate) static mut AUTO_PRESS_MARK_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(AUTO_PRESS_MARK) } as *const i64;
 
 // target 5 + 1
 pub(crate) static mut WALK_THROUGH_WALLS_HOOK: crate::hook::inline::Hook =
