@@ -1,5 +1,5 @@
 #[allow(unused)]
-pub(crate) struct HookBytes {
+pub(crate) struct Hook {
     target_addr: *mut ::core::ffi::c_void,
     source: Vec<u8>,
     patch: Vec<u8>,
@@ -8,7 +8,7 @@ pub(crate) struct HookBytes {
 }
 
 #[allow(unused)]
-impl HookBytes {
+impl Hook {
     pub(crate) const fn new() -> Self {
         Self {
             target_addr: ::core::ptr::null_mut(),
@@ -19,7 +19,7 @@ impl HookBytes {
         }
     }
 
-    pub(crate) unsafe fn build(
+    pub(crate) unsafe fn get_data(
         &mut self,
         mod_addr: *mut ::core::ffi::c_void,
         mod_data: &[u8],
@@ -108,10 +108,4 @@ impl HookBytes {
             self.disable();
         }
     }
-}
-
-#[allow(unused)]
-pub(crate) unsafe fn create_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) {
-    super::COIN_ADDR = (crate::SANDLL_ADDR + 0x2AD192C) as *mut u32;
-    super::WOOD_ADDR = (crate::SANDLL_ADDR + 0x2AD1930) as *mut u16;
 }

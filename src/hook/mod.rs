@@ -65,3 +65,79 @@ pub(crate) static mut TIME_HOOK: crate::hook::inline::Hook = unsafe { ::core::me
 pub(crate) static mut TIME_POINTER: *mut crate::hook::inline::Time = ::core::ptr::null_mut();
 pub(crate) static mut TIME_POINTER_POINTER: *const *mut crate::hook::inline::Time =
     unsafe { ::core::ptr::addr_of!(TIME_POINTER) };
+
+pub(crate) unsafe fn create_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) {
+    COIN_ADDR = (crate::SANDLL_ADDR + 0x2AD192C) as *mut u32;
+    WOOD_ADDR = (crate::SANDLL_ADDR + 0x2AD1930) as *mut u16;
+
+    crate::hook::SAVE_LOAD_HOOK = inline::Hook::new()
+        .get_data(
+            mod_addr,
+            mod_data,
+            "66 C1 E0 05 44 0F B6 CA 66 83 C0 04 44 0F B7 C0 4C 03 C1",
+            8,
+        )
+        .gen_detour(crate::hook::asm::load_save as *mut ::core::ffi::c_void, 64)
+        .create_hook()
+        .to_owned();
+
+    crate::hook::AUTO_PRESS_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "66 F7 D2 66 23 D0", 6)
+        .gen_detour(crate::hook::asm::auto_press as *mut ::core::ffi::c_void, 64)
+        .create_hook()
+        .to_owned();
+
+    crate::hook::FISHING_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "0F B7 48 18 66 83 F9 03", 8)
+        .gen_detour(crate::hook::asm::fishing as *mut ::core::ffi::c_void, 64)
+        .create_hook()
+        .to_owned();
+
+    crate::hook::WALK_THROUGH_WALLS_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "48 8B F2 48 85 C9", 6)
+        .gen_detour(
+            crate::hook::asm::walk_through_walls as *mut ::core::ffi::c_void,
+            64,
+        )
+        .create_hook()
+        .to_owned();
+
+    crate::hook::FRIENDSHIP_MUL_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "44 8B CA 4D 85 DB", 6)
+        .gen_detour(
+            crate::hook::asm::friendship_mul as *mut ::core::ffi::c_void,
+            64,
+        )
+        .create_hook()
+        .to_owned();
+
+    crate::hook::INSTANT_CROP_GROWTH_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "8B 10 D1 EA 83 E2 7F 74", 7)
+        .gen_detour(
+            crate::hook::asm::crop_instant_growth as *mut ::core::ffi::c_void,
+            64,
+        )
+        .create_hook()
+        .to_owned();
+
+    crate::hook::SKILL_EXP_MUL_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "4C 63 C2 0F B7 CE", 6)
+        .gen_detour(
+            crate::hook::asm::skill_exp_mul as *mut ::core::ffi::c_void,
+            64,
+        )
+        .create_hook()
+        .to_owned();
+
+    crate::hook::FARM_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "48 83 C3 08 66 41 3B FF", 8)
+        .gen_detour(crate::hook::asm::farm as *mut ::core::ffi::c_void, 0xFF)
+        .create_hook()
+        .to_owned();
+
+    crate::hook::TIME_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "03 D0 41 01 51 04", 6)
+        .gen_detour(crate::hook::asm::time as *mut ::core::ffi::c_void, 0xFF)
+        .create_hook()
+        .to_owned();
+}

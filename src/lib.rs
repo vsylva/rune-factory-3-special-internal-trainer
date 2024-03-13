@@ -55,8 +55,7 @@ unsafe fn init_hook() {
 
     minhook_raw::initialize();
 
-    crate::hook::inline::create_hook(mod_info.addr, &mod_data);
-    crate::hook::byte::create_hook(mod_info.addr, &mod_data);
+    crate::hook::create_hook(mod_info.addr, &mod_data);
 }
 
 unsafe fn init_hudhook(h_module: isize) {
