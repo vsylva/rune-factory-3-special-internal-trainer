@@ -40,13 +40,14 @@ impl Hook {
 
         let mut detour_fn_end_offset = 0;
 
-        let mut mask = 0;
-
         for i in 0..scan_nop_max_size {
-            if detour_fn_addr.add(i).cast::<u8>().read() == 0x90 {
-                mask += 1;
-                if mask == 4 {
-                    detour_fn_end_offset = i - 4;
+            let ptr = detour_fn_addr.cast::<u8>().byte_add(i);
+
+            if ptr.read() == 0x90 {
+                let parts = std::slice::from_raw_parts(ptr, 4);
+
+                if parts.iter().all(|nop| *nop == 0x90) {
+                    detour_fn_end_offset = i;
                     break;
                 }
             }
@@ -66,7 +67,7 @@ impl Hook {
 
         vcheat::write_mem(
             vcheat::internal::get_proc_handle(),
-            detour_fn_addr.add(detour_fn_end_offset + 1),
+            detour_fn_addr.byte_add(detour_fn_end_offset),
             &jmp_target_addr_shell_code,
         )
         .unwrap();
