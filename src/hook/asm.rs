@@ -517,7 +517,7 @@ pub(crate) unsafe extern "system" fn farm() {
 
 #[allow(unused)]
 #[inline(never)]
-pub(crate) unsafe extern "system" fn time(){
+pub(crate) unsafe extern "system" fn time() {
     std::arch::asm!(
         "
         push rax

@@ -11,7 +11,7 @@ name = "xinput1_4"
 crate-type = ["cdylib"]
 
 [dependencies]
-vcheat = "=0.6.1"
+vcheat = "=0.6.2"
 minhook_raw = "=0.3.0"
 hudhook = "=0.6.4"
 strum = "=0.26.2"

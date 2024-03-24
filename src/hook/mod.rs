@@ -1,5 +1,4 @@
 pub(crate) mod asm;
-pub(crate) mod byte;
 pub(crate) mod inline;
 
 // target 8

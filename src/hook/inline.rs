@@ -25,8 +25,8 @@ impl Hook {
     ) -> &mut Self {
         let pat_offset = vcheat::pat_find(pat, mod_data).unwrap();
 
-        self.target_addr = mod_addr.add(pat_offset);
-        self.target_back_addr = self.target_addr.add(occupied);
+        self.target_addr = mod_addr.byte_add(pat_offset);
+        self.target_back_addr = self.target_addr.byte_add(occupied);
 
         self
     }

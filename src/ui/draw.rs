@@ -8,8 +8,11 @@ pub(crate) unsafe fn windows(ui: &hudhook::imgui::Ui) {
     }
 
     if !IS_SHOW_UI {
+        (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = false;
         return;
     }
+
+    (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = true;
 
     static ONCE: ::std::sync::Once = ::std::sync::Once::new();
     ONCE.call_once(|| SAVE_LOAD_HOOK.enable());
@@ -77,15 +80,15 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn is_key_down_once(virtual_key_code: i32) -> bool {
-    static WAS_KEY_DOWN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    static mut WAS_KEY_DOWN: bool = false;
 
     if (crate::GetAsyncKeyState(virtual_key_code) & 0x8000) != 0 {
-        if !WAS_KEY_DOWN.load(std::sync::atomic::Ordering::SeqCst) {
-            WAS_KEY_DOWN.store(true, std::sync::atomic::Ordering::SeqCst);
+        if !WAS_KEY_DOWN {
+            WAS_KEY_DOWN = true;
             return true;
         }
     } else {
-        WAS_KEY_DOWN.store(false, std::sync::atomic::Ordering::SeqCst);
+        WAS_KEY_DOWN = false;
     }
 
     false

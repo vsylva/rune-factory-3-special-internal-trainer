@@ -4,8 +4,6 @@ mod ui;
 #[link(name = "user32")]
 extern "system" {
     pub(crate) fn GetAsyncKeyState(vKey: i32) -> u16;
-    pub(crate) fn IsIconic(hWnd: isize) -> i32;
-    pub(crate) fn FindWindowW(lpClassName: *const u16, lpWindowName: *const u16) -> isize;
 }
 
 pub(crate) static mut SANDLL_ADDR: i64 = 0;
