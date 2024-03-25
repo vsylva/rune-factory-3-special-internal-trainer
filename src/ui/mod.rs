@@ -1,6 +1,4 @@
 mod component;
-
-mod init;
 pub(crate) mod renderloop;
 mod style;
 mod window;
@@ -71,22 +69,6 @@ pub(crate) enum TimeSlowMul {
     两点零 = 0x3000,
 }
 
-impl Into<TimeSlowMul> for u32 {
-    fn into(self) -> TimeSlowMul {
-        match self {
-            0 => TimeSlowMul::暂停时间,
-            0x3D => TimeSlowMul::百分之一,
-            0x266 => TimeSlowMul::十分之一,
-            0x600 => TimeSlowMul::四分之一,
-            0xC00 => TimeSlowMul::二分之一,
-            0x1800 => TimeSlowMul::默认,
-            0x2400 => TimeSlowMul::一点五,
-            0x3000 => TimeSlowMul::两点零,
-            _ => unreachable!(),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 #[repr(C)]
 pub(crate) struct CropProp {
@@ -153,33 +135,33 @@ pub(crate) enum CropType {
     // 苹果 = 21, //  可砸，什么都不会出
     // 苹果 = 22    同上
     // 苹果 = 23    同上
-    草莓 = 24,     // Strawberry
-    卷心菜 = 25,   // Cabbage
-    樱芜菁 = 26,   // Pink Turnip
-    洋葱 = 27,     // Onion
-    托伊药草 = 28, // Toyherb
-    月落草 = 29,   // Moondrop Flower
-    樱草 = 30,     // Cherry Grass
-    灯草 = 31,     // Lamp Grass
+    草莓 = 24,
+    卷心菜 = 25,
+    樱芜菁 = 26,
+    洋葱 = 27,
+    托伊药草 = 28,
+    月落草 = 29,
+    樱草 = 30,
+    灯草 = 31,
     金刚花 = 32,
-    青水晶 = 33,   // Blue Crystal Flower
-    金卷心菜 = 34, // Golden King Cabbage
-    少女蜜瓜 = 35, // Pink Melon
+    青水晶 = 33,
+    金卷心菜 = 34,
+    少女蜜瓜 = 35,
 
     竹笋 = 36, // 可割
 
-    南瓜 = 37,     // Pumpkin
-    黄瓜 = 38,     // Cucumber
-    玉米 = 39,     // Corn
-    番茄 = 40,     // Tomato
-    茄子 = 41,     // Eggplant
-    菠萝 = 42,     // Pineapple
-    粉红猫 = 43,   // Pink Cat
-    铁千轮 = 44,   // Ironleaf
-    四叶草 = 45,   // 4-Leaf Clover
-    原之焰火 = 46, // Fireflower
-    绿水晶 = 47,   // Green Crystal Flower
-    金南瓜 = 48,   // Golden Pumpkin
+    南瓜 = 37,
+    黄瓜 = 38,
+    玉米 = 39,
+    番茄 = 40,
+    茄子 = 41,
+    菠萝 = 42,
+    粉红猫 = 43,
+    铁千轮 = 44,
+    四叶草 = 45,
+    原之焰火 = 46,
+    绿水晶 = 47,
+    金南瓜 = 48,
 
     蓝草 = 49, // 可捡
     绿草 = 50, // 可捡
@@ -192,22 +174,21 @@ pub(crate) enum CropType {
     青椒 = 56,
     菠菜 = 57,
     魅蓝草 = 58,
-
-    红叶花 = 59,     // Autumn Grass
-    剧毒蒲公英 = 60, // Pom-Pom Grass
-    红水晶 = 61,     // Red Crystal Flower
-    金马铃薯 = 62,   // Golden Potato
-    芜菁 = 63,       // Turnip
-    白萝卜 = 64,     // Radish
-    葱 = 65,         // Leek
-    白菜 = 66,       // Napa Cabbage
-    树形草 = 67,     // Noel Grass
-    白水晶 = 68,     // White Crystal Flower
-    金芜青 = 69,     // Golden Turnip
-    火热果实 = 70,   // Hot-Hot Fruit
+    红叶花 = 59,
+    剧毒蒲公英 = 60,
+    红水晶 = 61,
+    金马铃薯 = 62,
+    芜菁 = 63,
+    白萝卜 = 64,
+    葱 = 65,
+    白菜 = 66,
+    树形草 = 67,
+    白水晶 = 68,
+    金芜青 = 69,
+    火热果实 = 70,
 
     白草 = 71, // 可捡
-               //无效 = 72  从72开始的编号都是无效的东西
+               //从72开始的编号都是无效的东西
 }
 
 #[derive(
