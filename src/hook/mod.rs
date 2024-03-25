@@ -1,7 +1,6 @@
 pub(crate) mod asm;
 pub(crate) mod inline;
 
-// target 8
 pub(crate) static mut SAVE_LOAD_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 pub(crate) static mut SAVE_LOAD_MARK: i64 = 0;
 
@@ -13,32 +12,26 @@ pub(crate) static mut WOOD_ADDR: *mut u16 = ::core::ptr::null_mut();
 pub(crate) static mut WOOD_LAST: u16 = 0;
 pub(crate) static mut WOOD_MAX: bool = false;
 
-// target 5 + 3
-// size 37
 pub(crate) static mut FISHING_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 
-// target 5 + 1
-// size 25
 pub(crate) static mut AUTO_PRESS_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 pub(crate) static mut AUTO_PRESS_MARK: i64 = 0;
 
-// target 5 + 1
 pub(crate) static mut WALK_THROUGH_WALLS_HOOK: crate::hook::inline::Hook =
     unsafe { ::core::mem::zeroed() };
 
-// target 5 + 1
 pub(crate) static mut FRIENDSHIP_MUL_HOOK: crate::hook::inline::Hook =
     unsafe { ::core::mem::zeroed() };
 
-// target 5 + 1
 pub(crate) static mut INSTANT_CROP_GROWTH_HOOK: crate::hook::inline::Hook =
     unsafe { ::core::mem::zeroed() };
 
-// target 5 + 1
 pub(crate) static mut SKILL_EXP_MUL_HOOK: crate::hook::inline::Hook =
     unsafe { ::core::mem::zeroed() };
 
-// target 5 + 3
+pub(crate) static mut INF_MISSION_HOOK: crate::hook::inline::Hook =
+    unsafe { ::core::mem::zeroed() };
+
 pub(crate) static mut FARM_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 
 pub(crate) static mut SOIL_QUALITY_TOGGLE: bool = false;
@@ -59,7 +52,6 @@ pub(crate) static mut CROP_PROP: crate::ui::CropProp = crate::ui::CropProp {
 pub(crate) static mut CROP_PROP_POINTER: *const crate::ui::CropProp =
     unsafe { std::ptr::addr_of!(CROP_PROP) } as *const crate::ui::CropProp;
 
-// target 6
 pub(crate) static mut TIME_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 pub(crate) static mut TIME_POINTER: *mut crate::hook::inline::Time = ::core::ptr::null_mut();
 pub(crate) static mut TIME_POINTER_POINTER: *const *mut crate::hook::inline::Time =
@@ -137,6 +129,15 @@ pub(crate) unsafe fn create_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &
     crate::hook::TIME_HOOK = inline::Hook::new()
         .get_data(mod_addr, mod_data, "03 D0 41 01 51 04", 6)
         .gen_detour(crate::hook::asm::time as *mut ::core::ffi::c_void, 0xFF)
+        .create_hook()
+        .to_owned();
+
+    crate::hook::INF_MISSION_HOOK = inline::Hook::new()
+        .get_data(mod_addr, mod_data, "48 8B 5A 08 41 8D 49 FF", 8)
+        .gen_detour(
+            crate::hook::asm::inf_mission as *mut ::core::ffi::c_void,
+            64,
+        )
         .create_hook()
         .to_owned();
 }

@@ -1,8 +1,7 @@
 use super::IS_SHOW_UI;
 use crate::hook::{FARM_HOOK, PLANT_PLOTS_TOGGLE, SAVE_LOAD_HOOK, SAVE_LOAD_MARK, TIME_HOOK};
 
-pub(crate) unsafe fn windows(ui: &hudhook::imgui::Ui) {
-    // VK ~
+pub(crate) unsafe fn window(ui: &hudhook::imgui::Ui) {
     if is_key_down_once(0xC0) {
         IS_SHOW_UI = !IS_SHOW_UI;
     }
@@ -40,7 +39,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
         super::component::walk_through_walls_swtich(ui);
         super::component::friendship_mul_swtich(ui);
         super::component::skill_exp_mul_swtich(ui);
-
+        super::component::inf_mission(ui);
         super::component::crop_instant_growth_swtich(ui);
     }
 

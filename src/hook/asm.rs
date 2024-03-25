@@ -570,3 +570,42 @@ pub(crate) unsafe extern "system" fn time() {
         options(nomem, nostack, noreturn)
     );
 }
+
+#[allow(unused)]
+#[inline(never)]
+pub(crate) unsafe extern "system" fn inf_mission() {
+    std::arch::asm!(
+        "
+        mov rbx,[rdx+0x8]
+        lea ecx,[r9-0x01]
+        push rax
+        mov rax, 0x0
+        mov eax,[rbx+0x4]
+        or eax, 0x7000000
+        xor eax, 0x7000000
+        mov [rbx+0x4], eax
+        pop rax
+        ",
+        options(nostack, nomem)
+    );
+
+    std::arch::asm!(
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        options(nomem, nostack, noreturn)
+    );
+}

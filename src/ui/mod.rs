@@ -1,9 +1,9 @@
 mod component;
 
-mod draw;
 mod init;
 pub(crate) mod renderloop;
 mod style;
+mod window;
 
 pub(crate) static mut IS_SHOW_UI: bool = true;
 

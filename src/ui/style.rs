@@ -43,8 +43,6 @@ pub(crate) fn set_dark_red_style(ctx: &mut hudhook::imgui::Context) {
 
     style.window_title_align = [0.5, 0.5];
 
-    // style.alpha = 0.66;
-
     let sytle_colors = &mut ctx.style_mut().colors;
 
     sytle_colors[hudhook::imgui::sys::ImGuiCol_WindowBg as usize] = [0.1, 0.105, 0.11, 1.0];

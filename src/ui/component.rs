@@ -10,6 +10,7 @@ use crate::{
         FARM_HOOK,
         FISHING_HOOK,
         FRIENDSHIP_MUL_HOOK,
+        INF_MISSION_HOOK,
         INSTANT_CROP_GROWTH_HOOK,
         PLANT_PLOTS_MARK,
         PLANT_PLOTS_TOGGLE,
@@ -138,6 +139,17 @@ pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
         }
     }
 }
+
+pub(crate) unsafe fn inf_mission(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("无限委托", INF_MISSION_HOOK.get_swtich_mut()) {
+        if INF_MISSION_HOOK.get_swtich() {
+            INF_MISSION_HOOK.enable()
+        } else {
+            INF_MISSION_HOOK.disable()
+        }
+    }
+}
+
 pub(crate) unsafe fn crop_instant_growth_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("作物即时成熟", INSTANT_CROP_GROWTH_HOOK.get_swtich_mut()) {
         if INSTANT_CROP_GROWTH_HOOK.get_swtich() {

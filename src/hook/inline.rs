@@ -115,49 +115,25 @@ pub(crate) struct Time {
 }
 
 impl Time {
-    // pub(crate) fn get_second(&mut self) -> u8 {
-    //     (*self).second[0]
-    // }
-
     pub(crate) fn set_second(&mut self, second: u8) {
         (*self).second[0] = second;
     }
-
-    // pub(crate) fn get_hour(&mut self) -> u8 {
-    //     (*self).hour[0]
-    // }
 
     pub(crate) fn set_hour(&mut self, hour: u8) {
         (*self).hour[0] = hour;
     }
 
-    // pub(crate) fn get_day(&mut self) -> u8 {
-    //     (*self).day[0]
-    // }
-
     pub(crate) fn set_day(&mut self, day: u8) {
         (*self).day[0] = day;
     }
-
-    // pub(crate) fn get_season(&mut self) -> u8 {
-    //     (*self).season[0]
-    // }
 
     pub(crate) fn set_season(&mut self, season: u8) {
         (*self).season[0] = season;
     }
 
-    // pub(crate) fn get_year(&mut self) -> u8 {
-    //     (*self).year[0]
-    // }
-
     pub(crate) fn set_year(&mut self, year: u8) {
         (*self).year[0] = year;
     }
-
-    // pub(crate) fn get_slow_mul(&mut self) -> crate::ui::TimeSlowMul {
-    //     self.slow_time_mul.into()
-    // }
 
     pub(crate) fn set_slow_mul(&mut self, time_slow_mul: u32) {
         self.slow_time_mul = time_slow_mul;

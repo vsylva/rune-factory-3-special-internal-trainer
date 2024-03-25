@@ -1,4 +1,4 @@
-use super::draw::windows;
+use super::window::window;
 
 pub(crate) struct RenderLoop;
 
@@ -14,6 +14,6 @@ impl hudhook::ImguiRenderLoop for RenderLoop {
     }
 
     fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
-        unsafe { windows(ui) }
+        unsafe { window(ui) }
     }
 }
