@@ -47,15 +47,15 @@ pub(crate) static mut PLANT_PLOTS_TOGGLE: bool = false;
 pub(crate) static mut PLANT_PLOTS_MARK: i64 = 0;
 pub(crate) static mut CROP_PROP: crate::ui::CropProp = crate::ui::CropProp {
     type_: 0,
-    stage_and_lv: 0x10,
+    data: crate::ui::CropPropType {
+        stage: 0,
+    },
 };
 pub(crate) static mut CROP_PROP_POINTER: *const crate::ui::CropProp =
     unsafe { std::ptr::addr_of!(CROP_PROP) } as *const crate::ui::CropProp;
 
 pub(crate) static mut TIME_HOOK: crate::hook::inline::Hook = unsafe { ::core::mem::zeroed() };
 pub(crate) static mut TIME_POINTER: *mut crate::hook::inline::Time = ::core::ptr::null_mut();
-pub(crate) static mut TIME_POINTER_POINTER: *const *mut crate::hook::inline::Time =
-    unsafe { ::core::ptr::addr_of!(TIME_POINTER) };
 
 pub(crate) unsafe fn create_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &[u8]) {
     COIN_ADDR = (crate::SANDLL_ADDR + 0x2AD192C) as *mut u32;
@@ -68,7 +68,7 @@ pub(crate) unsafe fn create_hook(mod_addr: *mut ::core::ffi::c_void, mod_data: &
             "66 C1 E0 05 44 0F B6 CA 66 83 C0 04 44 0F B7 C0 4C 03 C1",
             8,
         )
-        .gen_detour(crate::hook::asm::load_save as *mut ::core::ffi::c_void, 64)
+        .gen_detour(crate::hook::asm::save_load as *mut ::core::ffi::c_void, 64)
         .create_hook()
         .to_owned();
 

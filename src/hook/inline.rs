@@ -1,6 +1,6 @@
 #[derive(Clone, Copy)]
 pub(crate) struct Hook {
-    target_addr: *mut std::ffi::c_void,
+    pub(crate) target_addr: *mut std::ffi::c_void,
     target_back_addr: *mut std::ffi::c_void,
     detour_fn_addr: *mut std::ffi::c_void,
     is_enable: bool,

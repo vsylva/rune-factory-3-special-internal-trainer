@@ -26,6 +26,12 @@ pub(crate) unsafe fn window(ui: &hudhook::imgui::Ui) {
             if SAVE_LOAD_MARK == 0 {
                 super::component::progress_bar("等待进入游戏...\0");
             } else {
+                static ONCE: ::std::sync::Once = ::std::sync::Once::new();
+                ONCE.call_once(|| {
+                    SAVE_LOAD_HOOK.disable();
+                    minhook_raw::remove_hook(SAVE_LOAD_HOOK.target_addr);
+                });
+
                 on_frame(ui);
             }
         });
