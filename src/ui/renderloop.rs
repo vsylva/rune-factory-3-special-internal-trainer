@@ -1,19 +1,8 @@
 use super::window::window;
 use crate::ui::{
-    CropGrowthStage,
-    CropLevel,
-    CropType,
-    Season,
-    TimeSlowMul,
-    CROP_GROWTH_STAGE_LIST,
-    CROP_LEVEL_LIST,
-    CROP_TYPE_LIST,
-    TIME_DAY_LIST,
-    TIME_HOUR_LIST,
-    TIME_SEASON_LIST,
-    TIME_SECOND_LIST,
-    TIME_SLOW_MUL_LIST,
-    TIME_YEAR_LIST,
+    CropGrowthStage, CropLevel, CropType, Season, TimeSlowMul, CROP_GROWTH_STAGE_LIST,
+    CROP_LEVEL_LIST, CROP_TYPE_LIST, TIME_DAY_LIST, TIME_HOUR_LIST, TIME_SEASON_LIST,
+    TIME_SECOND_LIST, TIME_SLOW_MUL_LIST, TIME_YEAR_LIST,
 };
 
 pub(crate) struct RenderLoop;

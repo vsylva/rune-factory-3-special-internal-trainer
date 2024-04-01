@@ -203,7 +203,7 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
         lea rax, [rcx]
         cmp rbx, rax
         ",
-        in("rax") crate::SANDLL_ADDR_POINTER,
+        in("rax") std::ptr::addr_of_mut!(crate::SANDLL_ADDR),
         options(nomem, nostack)
     );
 
@@ -471,7 +471,7 @@ pub(crate) unsafe extern "system" fn farm() {
 
         3:
         ",
-        in("r15") crate::hook::CROP_PROP_POINTER,
+        in("r15") std::ptr::addr_of!(crate::hook::CROP_PROP),
         options(nomem, nostack)
     );
 

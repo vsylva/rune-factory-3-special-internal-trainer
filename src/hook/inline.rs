@@ -1,22 +1,13 @@
 #[derive(Clone, Copy)]
-pub(crate) struct Hook {
+pub(crate) struct AsmHook {
     pub(crate) target_addr: *mut std::ffi::c_void,
     target_back_addr: *mut std::ffi::c_void,
     detour_fn_addr: *mut std::ffi::c_void,
     is_enable: bool,
 }
 
-impl Hook {
-    pub(crate) const fn new() -> Self {
-        Self {
-            target_addr: ::core::ptr::null_mut(),
-            target_back_addr: ::core::ptr::null_mut(),
-            detour_fn_addr: ::core::ptr::null_mut(),
-            is_enable: false,
-        }
-    }
-
-    pub(crate) unsafe fn get_data(
+impl AsmHook {
+    pub(crate) unsafe fn set_data(
         &mut self,
         mod_addr: *mut ::core::ffi::c_void,
         mod_data: &[u8],

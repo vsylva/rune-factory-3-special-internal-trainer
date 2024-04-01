@@ -7,8 +7,6 @@ extern "system" {
 }
 
 pub(crate) static mut SANDLL_ADDR: i64 = 0;
-static mut SANDLL_ADDR_POINTER: *const i64 =
-    unsafe { std::ptr::addr_of!(crate::SANDLL_ADDR) } as *const i64;
 
 #[no_mangle]
 unsafe extern "system" fn DllMain(
