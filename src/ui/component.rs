@@ -66,71 +66,47 @@ pub(crate) unsafe fn set_wood(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn fishing_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("钓鱼自动提竿", FISHING_HOOK.get_swtich_mut()) {
-        if FISHING_HOOK.get_swtich() {
-            FISHING_HOOK.enable();
-            AUTO_PRESS_HOOK.enable();
-        } else {
-            FISHING_HOOK.disable();
-            AUTO_PRESS_HOOK.disable();
-        }
+    if ui.checkbox("钓鱼自动提竿", &mut FISHING_HOOK.is_enabled) {
+        FISHING_HOOK.switch();
+
+        AUTO_PRESS_HOOK.is_enabled = FISHING_HOOK.is_enabled;
+        AUTO_PRESS_HOOK.switch();
     }
 }
 pub(crate) unsafe fn walk_through_walls_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("穿墙", WALK_THROUGH_WALLS_HOOK.get_swtich_mut()) {
-        if WALK_THROUGH_WALLS_HOOK.get_swtich() {
-            WALK_THROUGH_WALLS_HOOK.enable()
-        } else {
-            WALK_THROUGH_WALLS_HOOK.disable()
-        }
+    if ui.checkbox("穿墙", &mut WALK_THROUGH_WALLS_HOOK.is_enabled) {
+        WALK_THROUGH_WALLS_HOOK.switch();
     }
 }
 pub(crate) unsafe fn friendship_mul_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("送礼百倍友谊", FRIENDSHIP_MUL_HOOK.get_swtich_mut()) {
-        if FRIENDSHIP_MUL_HOOK.get_swtich() {
-            FRIENDSHIP_MUL_HOOK.enable()
-        } else {
-            FRIENDSHIP_MUL_HOOK.disable()
-        }
+    if ui.checkbox("送礼百倍友谊", &mut FRIENDSHIP_MUL_HOOK.is_enabled) {
+        FRIENDSHIP_MUL_HOOK.switch()
     }
 }
 
 pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("百倍技能经验", SKILL_EXP_MUL_HOOK.get_swtich_mut()) {
-        if SKILL_EXP_MUL_HOOK.get_swtich() {
-            SKILL_EXP_MUL_HOOK.enable()
-        } else {
-            SKILL_EXP_MUL_HOOK.disable()
-        }
+    if ui.checkbox("百倍技能经验", &mut SKILL_EXP_MUL_HOOK.is_enabled) {
+        SKILL_EXP_MUL_HOOK.switch()
     }
 }
 
 pub(crate) unsafe fn inf_mission(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("无限委托", INF_MISSION_HOOK.get_swtich_mut()) {
-        if INF_MISSION_HOOK.get_swtich() {
-            INF_MISSION_HOOK.enable()
-        } else {
-            INF_MISSION_HOOK.disable()
-        }
+    if ui.checkbox("无限委托", &mut INF_MISSION_HOOK.is_enabled) {
+        INF_MISSION_HOOK.switch()
     }
 }
 
 pub(crate) unsafe fn crop_instant_growth_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("作物即时成熟", INSTANT_CROP_GROWTH_HOOK.get_swtich_mut()) {
-        if INSTANT_CROP_GROWTH_HOOK.get_swtich() {
-            INSTANT_CROP_GROWTH_HOOK.enable()
-        } else {
-            INSTANT_CROP_GROWTH_HOOK.disable()
-        }
+    if ui.checkbox("作物即时成熟", &mut INSTANT_CROP_GROWTH_HOOK.is_enabled) {
+        INSTANT_CROP_GROWTH_HOOK.switch()
     }
 }
 
 pub(crate) unsafe fn farm_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启农田面板", FARM_HOOK.get_swtich_mut()) {
-        if FARM_HOOK.get_swtich() {
-            FARM_HOOK.enable();
-        } else {
-            FARM_HOOK.disable();
+    if ui.checkbox("开启农田面板", &mut FARM_HOOK.is_enabled) {
+        FARM_HOOK.switch();
+
+        if !FARM_HOOK.is_enabled {
             TILTH_PLOTS_MARK = 0;
             SOIL_QUALITY_MARK = 0;
             WATERING_PLOTS_MARK = 0;
@@ -272,12 +248,8 @@ pub(crate) unsafe fn clear_crop(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn time_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启时间面板", TIME_HOOK.get_swtich_mut()) {
-        if TIME_HOOK.get_swtich() {
-            TIME_HOOK.enable();
-        } else {
-            TIME_HOOK.disable();
-        }
+    if ui.checkbox("开启时间面板", &mut TIME_HOOK.is_enabled) {
+        TIME_HOOK.switch()
     }
 }
 

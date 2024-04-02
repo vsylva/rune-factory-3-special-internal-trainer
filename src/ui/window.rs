@@ -14,7 +14,10 @@ pub(crate) unsafe fn window(ui: &hudhook::imgui::Ui) {
     (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = true;
 
     static ONCE: ::std::sync::Once = ::std::sync::Once::new();
-    ONCE.call_once(|| SAVE_LOAD_HOOK.enable());
+    ONCE.call_once(|| {
+        SAVE_LOAD_HOOK.is_enabled = true;
+        SAVE_LOAD_HOOK.switch()
+    });
 
     ui.window(format!("符文工房3修改器\t[~]键打开/关闭菜单"))
         .title_bar(true)
@@ -28,7 +31,9 @@ pub(crate) unsafe fn window(ui: &hudhook::imgui::Ui) {
             } else {
                 static ONCE: ::std::sync::Once = ::std::sync::Once::new();
                 ONCE.call_once(|| {
-                    SAVE_LOAD_HOOK.disable();
+                    SAVE_LOAD_HOOK.is_enabled = false;
+                    SAVE_LOAD_HOOK.switch();
+
                     minhook_raw::remove_hook(SAVE_LOAD_HOOK.target_addr);
                 });
 
@@ -52,7 +57,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
     if ui.collapsing_header("农田", hudhook::imgui::TreeNodeFlags::empty()) {
         super::component::farm_swtich(ui);
 
-        if FARM_HOOK.get_swtich() {
+        if FARM_HOOK.is_enabled {
             super::component::tilth_plots_swtich(ui);
             super::component::soil_quality_swtich(ui);
             super::component::watering_plots_swtich(ui);
@@ -70,7 +75,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
     if ui.collapsing_header("时间", hudhook::imgui::TreeNodeFlags::empty()) {
         crate::ui::component::time_swtich(ui);
 
-        if TIME_HOOK.get_swtich() {
+        if TIME_HOOK.is_enabled {
             super::component::time_second_set(ui);
             super::component::time_hour_set(ui);
             super::component::time_day_set(ui);

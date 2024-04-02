@@ -1,95 +1,71 @@
-#[derive(Clone, Copy)]
-pub(crate) struct AsmHook {
-    pub(crate) target_addr: *mut std::ffi::c_void,
-    target_back_addr: *mut std::ffi::c_void,
-    detour_fn_addr: *mut std::ffi::c_void,
-    is_enable: bool,
+pub struct AsmHook {
+    pub target_addr: *mut ::core::ffi::c_void,
+    pub is_enabled: bool,
 }
 
 impl AsmHook {
-    pub(crate) unsafe fn set_data(
+    pub const fn new() -> Self {
+        Self {
+            target_addr: ::core::ptr::null_mut(),
+            is_enabled: false,
+        }
+    }
+    pub unsafe fn create(
         &mut self,
         mod_addr: *mut ::core::ffi::c_void,
         mod_data: &[u8],
         pat: &str,
         occupied: usize,
-    ) -> &mut Self {
+        detour_addr: *mut ::core::ffi::c_void,
+    ) {
         let pat_offset = vcheat::pat_find(pat, mod_data).unwrap();
 
         self.target_addr = mod_addr.byte_add(pat_offset);
-        self.target_back_addr = self.target_addr.byte_add(occupied);
 
-        self
-    }
+        let back_addr = self.target_addr.byte_add(occupied);
 
-    pub(crate) unsafe fn gen_detour(
-        &mut self,
-        detour_fn_addr: *mut ::core::ffi::c_void,
-        scan_nop_max_size: usize,
-    ) -> &mut Self {
-        self.detour_fn_addr = detour_fn_addr;
+        let mut end_offset = 0;
 
-        let mut detour_fn_end_offset = 0;
-
-        for i in 0..scan_nop_max_size {
-            let ptr = detour_fn_addr.cast::<u8>().byte_add(i);
+        for i in 0..0xFF {
+            let ptr = detour_addr.cast::<u8>().byte_add(i);
 
             if ptr.read() == 0x90 {
                 let parts = std::slice::from_raw_parts(ptr, 4);
 
                 if parts.iter().all(|nop| *nop == 0x90) {
-                    detour_fn_end_offset = i;
+                    end_offset = i;
                     break;
                 }
             }
         }
 
-        let mut jmp_target_addr_shell_code = Vec::new();
+        let mut back_shell_code = Vec::new();
 
-        jmp_target_addr_shell_code.push(0xFF);
-        jmp_target_addr_shell_code.push(0x25);
-        jmp_target_addr_shell_code.push(0x0);
-        jmp_target_addr_shell_code.push(0x0);
-        jmp_target_addr_shell_code.push(0x0);
-        jmp_target_addr_shell_code.push(0x0);
+        back_shell_code.push(0xFF);
+        back_shell_code.push(0x25);
+        back_shell_code.push(0x0);
+        back_shell_code.push(0x0);
+        back_shell_code.push(0x0);
+        back_shell_code.push(0x0);
 
-        jmp_target_addr_shell_code
-            .extend_from_slice((self.target_back_addr as isize).to_le_bytes().as_ref());
+        back_shell_code.extend_from_slice((back_addr as isize).to_le_bytes().as_ref());
 
         vcheat::write_mem(
             vcheat::internal::get_proc_handle(),
-            detour_fn_addr.byte_add(detour_fn_end_offset),
-            &jmp_target_addr_shell_code,
+            detour_addr.byte_add(end_offset),
+            &back_shell_code,
         )
         .unwrap();
 
-        self
+        minhook_raw::create_hook(self.target_addr, detour_addr, ::core::ptr::null_mut());
     }
 
-    pub(crate) unsafe fn create_hook(&self) -> &Self {
-        minhook_raw::create_hook(
-            self.target_addr,
-            self.detour_fn_addr,
-            ::core::ptr::null_mut(),
-        );
-
-        self
-    }
-
-    pub(crate) fn get_swtich_mut(&mut self) -> &mut bool {
-        &mut self.is_enable
-    }
-
-    pub(crate) fn get_swtich(&self) -> bool {
-        self.is_enable
-    }
-
-    pub(crate) fn enable(&mut self) {
-        minhook_raw::enable_hook(self.target_addr);
-    }
-
-    pub(crate) fn disable(&mut self) {
-        minhook_raw::disable_hook(self.target_addr);
+    pub fn switch(&mut self) {
+        if self.is_enabled {
+            minhook_raw::enable_hook(self.target_addr);
+        } else {
+            minhook_raw::disable_hook(self.target_addr);
+        }
     }
 }
 
