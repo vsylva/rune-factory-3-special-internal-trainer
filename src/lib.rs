@@ -22,7 +22,7 @@ unsafe extern "system" fn DllMain(
             let mod_info;
 
             loop {
-                if now.elapsed().as_secs() < 20 {
+                if now.elapsed().as_secs() < 30 {
                     if let (Ok(mi), Ok(mi1)) = (
                         vcheat::internal::get_mod_info("Live2DCubismCore.dll"),
                         vcheat::internal::get_mod_info("Sandll.dll"),
@@ -38,6 +38,8 @@ unsafe extern "system" fn DllMain(
 
                 ::std::thread::sleep(dur);
             }
+
+            ::std::thread::sleep(::std::time::Duration::from_secs(3));
 
             crate::SANDLL_ADDR = mod_info.addr as i64;
 

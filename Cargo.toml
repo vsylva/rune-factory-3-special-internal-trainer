@@ -1,6 +1,6 @@
 [package]
 name = "rune_factory3_trainer"
-version = "0.1.9"
+version = "0.2.0"
 edition = "2021"
 authors = ["vSylva"]
 publish = false
@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 [dependencies]
 vcheat = "=0.6.4"
 minhook_raw = "=0.3.0"
-hudhook = "=0.6.4"
+hudhook = { rev = "f058304", git = "https://github.com/veeenu/hudhook.git" }
 strum = "=0.26.2"
 strum_macros = "=0.26.2"
 
