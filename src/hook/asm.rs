@@ -63,9 +63,9 @@ pub(crate) unsafe extern "system" fn fishing() {
     std::arch::asm!(
         "
         je 0f
-        mov rax, 0x1
+        mov word ptr [rax], 0x1
         ",
-        out("rax") crate::hook::AUTO_PRESS_MARK,
+        in("rax") ::std::ptr::addr_of!(crate::hook::AUTO_PRESS_MARK),
         options(nomem, nostack)
     );
 
@@ -73,9 +73,9 @@ pub(crate) unsafe extern "system" fn fishing() {
         "
         jmp 1f
         0:
-        mov rax, 0x0
+        mov word ptr [rax], 0x0
         ",
-        out("rax") crate::hook::AUTO_PRESS_MARK,
+        in("rax") ::std::ptr::addr_of!(crate::hook::AUTO_PRESS_MARK),
         options(nomem, nostack));
 
     std::arch::asm!(
