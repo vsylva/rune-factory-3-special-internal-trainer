@@ -13,9 +13,9 @@ pub(crate) unsafe extern "system" fn save_load() {
 
     std::arch::asm!(
     "
-    mov rax, 0x1
+    mov word ptr[rax], 0x1
     ",
-    out("rax") crate::hook::SAVE_LOAD_MARK,
+    in("rax") ::std::ptr::addr_of!(crate::hook::SAVE_LOAD_MARK),
     options(nomem, nostack)
     );
 
@@ -529,9 +529,9 @@ pub(crate) unsafe extern "system" fn time() {
     std::arch::asm!(
         "
         lea rax, [r9 + 0x4]
-        mov r15, rax
+        mov [r15], rax
         ",
-        out("r15") crate::hook::TIME_POINTER,
+        in("r15") ::std::ptr::addr_of!(crate::hook::TIME_POINTER),
         options(nostack)
     );
 

@@ -39,7 +39,7 @@ unsafe extern "system" fn DllMain(
                 ::std::thread::sleep(dur);
             }
 
-            ::std::thread::sleep(::std::time::Duration::from_secs(3));
+            ::std::thread::sleep(::std::time::Duration::from_secs(2));
 
             crate::SANDLL_ADDR = mod_info.addr as i64;
 
