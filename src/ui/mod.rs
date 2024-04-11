@@ -1,3 +1,5 @@
+use hudhook_mini::RenderContext;
+
 mod component;
 
 mod style;
@@ -29,11 +31,11 @@ static mut TIME_SLOW_MUL_LIST: Vec<TimeSlowMul> = Vec::new();
 
 pub(crate) struct RenderLoop;
 
-impl hudhook::ImguiRenderLoop for RenderLoop {
+impl hudhook_mini::ImguiRenderLoop for RenderLoop {
     fn initialize<'a>(
         &'a mut self,
-        _ctx: &mut hudhook::imgui::Context,
-        _loader: hudhook::TextureLoader<'a>,
+        _ctx: &mut hudhook_mini::imgui::Context,
+        _render_context: &'a mut dyn RenderContext,
     ) {
         unsafe {
             _ctx.set_ini_filename(None);
@@ -78,8 +80,7 @@ impl hudhook::ImguiRenderLoop for RenderLoop {
             }
         }
     }
-
-    fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
+    fn render(&mut self, ui: &mut hudhook_mini::imgui::Ui) {
         unsafe { window::window(ui) }
     }
 }

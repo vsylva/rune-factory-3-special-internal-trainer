@@ -1,8 +1,8 @@
 use super::{component, IS_SHOW_UI};
 use crate::hook::{FARM_HOOK, PLANT_PLOTS_TOGGLE, SAVE_LOAD_HOOK, SAVE_LOAD_MARK, TIME_HOOK};
 
-pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
-    if ui.collapsing_header("功能", hudhook::imgui::TreeNodeFlags::empty()) {
+pub(crate) unsafe fn on_frame(ui: &hudhook_mini::imgui::Ui) {
+    if ui.collapsing_header("功能", hudhook_mini::imgui::TreeNodeFlags::empty()) {
         component::set_gold(ui);
         component::set_wood(ui);
         component::fishing_swtich(ui);
@@ -17,7 +17,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
         component::crop_instant_growth_swtich(ui);
     }
 
-    if ui.collapsing_header("农田", hudhook::imgui::TreeNodeFlags::empty()) {
+    if ui.collapsing_header("农田", hudhook_mini::imgui::TreeNodeFlags::empty()) {
         component::farm_swtich(ui);
 
         if FARM_HOOK.is_enabled {
@@ -35,7 +35,7 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
         }
     }
 
-    if ui.collapsing_header("时间", hudhook::imgui::TreeNodeFlags::empty()) {
+    if ui.collapsing_header("时间", hudhook_mini::imgui::TreeNodeFlags::empty()) {
         crate::ui::component::time_swtich(ui);
 
         if TIME_HOOK.is_enabled {
@@ -52,21 +52,21 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
     }
 }
 
-pub(crate) unsafe fn window(ui: &hudhook::imgui::Ui) {
+pub(crate) unsafe fn window(ui: &hudhook_mini::imgui::Ui) {
     if is_key_down_once(0xC0) {
         IS_SHOW_UI = !IS_SHOW_UI;
     }
 
     if !IS_SHOW_UI {
-        (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = false;
+        (*hudhook_mini::imgui::sys::igGetIO()).MouseDrawCursor = false;
         return;
     }
 
-    (*hudhook::imgui::sys::igGetIO()).MouseDrawCursor = true;
+    (*hudhook_mini::imgui::sys::igGetIO()).MouseDrawCursor = true;
 
     ui.window("符文工房3修改器\t[~]键打开/关闭菜单")
         .title_bar(true)
-        .size([500.0, 400.0], hudhook::imgui::Condition::FirstUseEver)
+        .size([500.0, 400.0], hudhook_mini::imgui::Condition::FirstUseEver)
         .resizable(true)
         .collapsible(true)
         .movable(true)

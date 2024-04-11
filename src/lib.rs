@@ -57,13 +57,15 @@ unsafe extern "system" fn DllMain(
 
             drop(mod_data);
 
-            if let Err(_) = ::hudhook::Hudhook::builder()
-                .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(ui::RenderLoop)
-                .with_hmodule(hudhook::windows::Win32::Foundation::HINSTANCE(h_module))
+            if let Err(_) = ::hudhook_mini::Hudhook::builder()
+                .with::<hudhook_mini::hooks::dx11::ImguiDx11Hooks>(ui::RenderLoop)
+                .with_hmodule(hudhook_mini::windows::Win32::Foundation::HINSTANCE(
+                    h_module,
+                ))
                 .build()
                 .apply()
             {
-                ::hudhook::eject();
+                ::hudhook_mini::eject();
             }
         });
     } else if ul_reason_for_call == 0 {

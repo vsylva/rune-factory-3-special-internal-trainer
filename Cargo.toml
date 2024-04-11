@@ -13,7 +13,9 @@ crate-type = ["cdylib"]
 [dependencies]
 vcheat = "=0.6.4"
 minhook_raw = "=0.3.0"
-hudhook = { rev = "f058304", git = "https://github.com/veeenu/hudhook.git" }
+hudhook-mini = { version = "0.6.5", default-features = false, features = [
+    "dx11",
+] }
 strum = "=0.26.2"
 strum_macros = "=0.26.2"
 
