@@ -1,6 +1,6 @@
 # Rune Factory 3 Trainer / 符文工房3修改器
 
-![hello](res/trainer.png)
+![menu](res/menu.png)
 
 ## 下载
 
