@@ -2,11 +2,12 @@ use std::ptr::addr_of_mut;
 
 use crate::{
     hook::{
-        AUTO_PRESS_HOOK, COIN_ADDR, COIN_LAST, COIN_MAX, CROP_PROP, FARM_HOOK, FISHING_HOOK,
-        FRIENDSHIP_MUL_HOOK, INF_MISSION_HOOK, INSTANT_CROP_GROWTH_HOOK, PLANT_PLOTS_MARK,
-        PLANT_PLOTS_TOGGLE, SKILL_EXP_MUL_HOOK, SOIL_QUALITY_MARK, SOIL_QUALITY_TOGGLE,
-        TILTH_PLOTS_MARK, TILTH_PLOTS_TOGGLE, TIME_HOOK, TIME_POINTER, WALK_THROUGH_WALLS_HOOK,
-        WATERING_PLOTS_MARK, WATERING_PLOTS_TOGGLE, WOOD_ADDR, WOOD_LAST, WOOD_MAX,
+        AUTO_PRESS_HOOK, COIN_ADDR, COIN_LAST, COIN_MAX, COMBAT_EXP_MUL_HOOK, CROP_PROP, FARM_HOOK,
+        FISHING_HOOK, FRIENDSHIP_MUL_HOOK, INF_MISSION_HOOK, INSTANT_CROP_GROWTH_HOOK,
+        PLANT_PLOTS_MARK, PLANT_PLOTS_TOGGLE, SKILL_EXP_MUL_HOOK, SOIL_QUALITY_MARK,
+        SOIL_QUALITY_TOGGLE, TILTH_PLOTS_MARK, TILTH_PLOTS_TOGGLE, TIME_HOOK, TIME_POINTER,
+        WALK_THROUGH_WALLS_HOOK, WATERING_PLOTS_MARK, WATERING_PLOTS_TOGGLE, WOOD_ADDR, WOOD_LAST,
+        WOOD_MAX,
     },
     ui::{
         CropType, TimeSlowMul, CROP_GROWTH_STAGE_LIST, CROP_GROWTH_STAGE_SELECTED, CROP_LEVEL_LIST,
@@ -17,7 +18,7 @@ use crate::{
     },
 };
 
-pub(crate) unsafe fn progress_bar(s: &str) {
+pub(crate) unsafe fn loading_bar(s: &str) {
     static mut PROGRESS: f32 = 0.0f32;
     static mut ANIMATE: bool = true;
     static mut PROGRESS_DIR: f32 = 1.0f32;
@@ -79,7 +80,7 @@ pub(crate) unsafe fn walk_through_walls_swtich(ui: &hudhook::imgui::Ui) {
     }
 }
 pub(crate) unsafe fn friendship_mul_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("送礼百倍友谊", &mut FRIENDSHIP_MUL_HOOK.is_enabled) {
+    if ui.checkbox("百倍送礼友谊", &mut FRIENDSHIP_MUL_HOOK.is_enabled) {
         FRIENDSHIP_MUL_HOOK.switch()
     }
 }
@@ -87,6 +88,12 @@ pub(crate) unsafe fn friendship_mul_swtich(ui: &hudhook::imgui::Ui) {
 pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("百倍技能经验", &mut SKILL_EXP_MUL_HOOK.is_enabled) {
         SKILL_EXP_MUL_HOOK.switch()
+    }
+}
+
+pub(crate) unsafe fn combat_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("百倍战斗经验", &mut COMBAT_EXP_MUL_HOOK.is_enabled) {
+        COMBAT_EXP_MUL_HOOK.switch()
     }
 }
 
@@ -399,14 +406,14 @@ pub(crate) unsafe fn time_slow_mul_set(ui: &hudhook::imgui::Ui) {
 
 pub(crate) unsafe fn time_pause(ui: &hudhook::imgui::Ui) {
     if ui.button("暂停时间") {
-        (*TIME_POINTER).set_slow_mul(TIME_SLOW_MUL_SELECTED as u32);
         TIME_SLOW_MUL_SELECTED = TimeSlowMul::暂停时间;
+        (*TIME_POINTER).set_slow_mul(TIME_SLOW_MUL_SELECTED as u32);
     }
 }
 
 pub(crate) unsafe fn time_default(ui: &hudhook::imgui::Ui) {
     if ui.button("恢复时间") {
-        (*TIME_POINTER).set_slow_mul(TimeSlowMul::默认 as u32);
         TIME_SLOW_MUL_SELECTED = TimeSlowMul::默认;
+        (*TIME_POINTER).set_slow_mul(TimeSlowMul::默认 as u32);
     }
 }

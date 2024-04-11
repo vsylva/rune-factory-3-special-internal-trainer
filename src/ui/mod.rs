@@ -1,5 +1,5 @@
 mod component;
-pub(crate) mod renderloop;
+
 mod style;
 mod window;
 
@@ -26,6 +26,63 @@ static mut TIME_YEAR_SELECTED: u8 = 1;
 static mut TIME_YEAR_LIST: Vec<u8> = Vec::new();
 static mut TIME_SLOW_MUL_SELECTED: TimeSlowMul = TimeSlowMul::默认;
 static mut TIME_SLOW_MUL_LIST: Vec<TimeSlowMul> = Vec::new();
+
+pub(crate) struct RenderLoop;
+
+impl hudhook::ImguiRenderLoop for RenderLoop {
+    fn initialize<'a>(
+        &'a mut self,
+        _ctx: &mut hudhook::imgui::Context,
+        _loader: hudhook::TextureLoader<'a>,
+    ) {
+        unsafe {
+            _ctx.set_ini_filename(None);
+
+            crate::ui::style::set_dark_red_style(_ctx);
+            crate::ui::style::set_font(_ctx, 20.0);
+
+            for crop_type in <CropType as strum::IntoEnumIterator>::iter() {
+                CROP_TYPE_LIST.push(crop_type)
+            }
+
+            for crop_level in <CropLevel as strum::IntoEnumIterator>::iter() {
+                CROP_LEVEL_LIST.push(crop_level)
+            }
+
+            for crop_growth_stage in <CropGrowthStage as strum::IntoEnumIterator>::iter() {
+                CROP_GROWTH_STAGE_LIST.push(crop_growth_stage)
+            }
+
+            for second in 0..60 {
+                TIME_SECOND_LIST.push(second);
+            }
+
+            for hour in 0..24 {
+                TIME_HOUR_LIST.push(hour);
+            }
+
+            for day in 1..31 {
+                TIME_DAY_LIST.push(day);
+            }
+
+            for season in <Season as strum::IntoEnumIterator>::iter() {
+                TIME_SEASON_LIST.push(season);
+            }
+
+            for year in 1..100 {
+                TIME_YEAR_LIST.push(year);
+            }
+
+            for time_slow_mul in <TimeSlowMul as strum::IntoEnumIterator>::iter() {
+                TIME_SLOW_MUL_LIST.push(time_slow_mul)
+            }
+        }
+    }
+
+    fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
+        unsafe { window::window(ui) }
+    }
+}
 
 #[derive(
     Debug,
@@ -57,15 +114,22 @@ pub(crate) enum Season {
     Hash,
     strum_macros::EnumIter,
     strum_macros::Display,
+    strum_macros::EnumString,
 )]
 pub(crate) enum TimeSlowMul {
     暂停时间 = 0,
+    #[strum(serialize = "0.01倍")]
     百分之一 = 0x3D,
+    #[strum(serialize = "0.1倍")]
     十分之一 = 0x266,
+    #[strum(serialize = "0.25倍")]
     四分之一 = 0x600,
+    #[strum(serialize = "0.5倍")]
     二分之一 = 0xC00,
     默认 = 0x1800,
+    #[strum(serialize = "1.5倍")]
     一点五 = 0x2400,
+    #[strum(serialize = "2.0倍")]
     两点零 = 0x3000,
 }
 

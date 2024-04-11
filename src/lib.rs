@@ -6,7 +6,7 @@ extern "system" {
     pub(crate) fn GetAsyncKeyState(vKey: i32) -> u16;
 }
 
-pub(crate) static mut SANDLL_ADDR: i64 = 0;
+pub(crate) static mut SANDLL_HANDLE: i64 = 0;
 
 #[no_mangle]
 unsafe extern "system" fn DllMain(
@@ -41,7 +41,7 @@ unsafe extern "system" fn DllMain(
 
             ::std::thread::sleep(::std::time::Duration::from_secs(2));
 
-            crate::SANDLL_ADDR = mod_info.addr as i64;
+            crate::SANDLL_HANDLE = mod_info.addr as i64;
 
             let mut mod_data = vec![0u8; mod_info.size as usize];
 
@@ -58,7 +58,7 @@ unsafe extern "system" fn DllMain(
             drop(mod_data);
 
             if let Err(_) = ::hudhook::Hudhook::builder()
-                .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(crate::ui::renderloop::RenderLoop)
+                .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(ui::RenderLoop)
                 .with_hmodule(hudhook::windows::Win32::Foundation::HINSTANCE(h_module))
                 .build()
                 .apply()
