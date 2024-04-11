@@ -4,10 +4,10 @@ use crate::{
     hook::{
         AUTO_PRESS_HOOK, COIN_ADDR, COIN_LAST, COIN_MAX, COMBAT_EXP_MUL_HOOK, CROP_PROP, FARM_HOOK,
         FISHING_HOOK, FRIENDSHIP_MUL_HOOK, INF_MISSION_HOOK, INSTANT_CROP_GROWTH_HOOK,
-        PLANT_PLOTS_MARK, PLANT_PLOTS_TOGGLE, SKILL_EXP_MUL_HOOK, SOIL_QUALITY_MARK,
-        SOIL_QUALITY_TOGGLE, TILTH_PLOTS_MARK, TILTH_PLOTS_TOGGLE, TIME_HOOK, TIME_POINTER,
-        WALK_THROUGH_WALLS_HOOK, WATERING_PLOTS_MARK, WATERING_PLOTS_TOGGLE, WOOD_ADDR, WOOD_LAST,
-        WOOD_MAX,
+        NO_DEBUFF_HOOK, PLANT_PLOTS_MARK, PLANT_PLOTS_TOGGLE, SKILL_EXP_MUL_HOOK,
+        SOIL_QUALITY_MARK, SOIL_QUALITY_TOGGLE, TAME_HOOK, TILTH_PLOTS_MARK, TILTH_PLOTS_TOGGLE,
+        TIME_HOOK, TIME_POINTER, WALK_THROUGH_WALLS_HOOK, WATERING_PLOTS_MARK,
+        WATERING_PLOTS_TOGGLE, WOOD_ADDR, WOOD_LAST, WOOD_MAX,
     },
     ui::{
         CropType, TimeSlowMul, CROP_GROWTH_STAGE_LIST, CROP_GROWTH_STAGE_SELECTED, CROP_LEVEL_LIST,
@@ -91,15 +91,33 @@ pub(crate) unsafe fn skill_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
     }
 }
 
+// pub(crate) unsafe fn damage_mul_swtich(ui: &hudhook::imgui::Ui) {
+//     if ui.checkbox("百倍伤害", &mut DAMAGE_MUL_HOOK.is_enabled) {
+//         DAMAGE_MUL_HOOK.switch()
+//     }
+// }
+
 pub(crate) unsafe fn combat_exp_mul_swtich(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("百倍战斗经验", &mut COMBAT_EXP_MUL_HOOK.is_enabled) {
         COMBAT_EXP_MUL_HOOK.switch()
     }
 }
 
+pub(crate) unsafe fn tame_swtich(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("100%驯服魔物", &mut TAME_HOOK.is_enabled) {
+        TAME_HOOK.switch()
+    }
+}
+
 pub(crate) unsafe fn inf_mission(ui: &hudhook::imgui::Ui) {
     if ui.checkbox("无限委托", &mut INF_MISSION_HOOK.is_enabled) {
         INF_MISSION_HOOK.switch()
+    }
+}
+
+pub(crate) unsafe fn no_debuff(ui: &hudhook::imgui::Ui) {
+    if ui.checkbox("无负面状态", &mut NO_DEBUFF_HOOK.is_enabled) {
+        NO_DEBUFF_HOOK.switch()
     }
 }
 

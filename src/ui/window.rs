@@ -11,6 +11,9 @@ pub(crate) unsafe fn on_frame(ui: &hudhook::imgui::Ui) {
         component::skill_exp_mul_swtich(ui);
         component::combat_exp_mul_swtich(ui);
         component::inf_mission(ui);
+        component::tame_swtich(ui);
+        component::no_debuff(ui);
+        // component::damage_mul_swtich(ui);
         component::crop_instant_growth_swtich(ui);
     }
 

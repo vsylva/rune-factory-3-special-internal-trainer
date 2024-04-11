@@ -651,3 +651,125 @@ pub(crate) unsafe extern "system" fn combat_exp_mul() {
         options(nomem, nostack)
     );
 }
+
+#[inline(never)]
+pub(crate) unsafe extern "system" fn tame() {
+    std::arch::asm!(
+        "
+        shr rcx, 0x20
+        and ecx, 0x7F
+        mov r8w, cx
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        options(nomem, nostack)
+    );
+}
+
+#[inline(never)]
+pub(crate) unsafe extern "system" fn no_debuff() {
+    std::arch::asm!(
+        "
+        push rax
+
+        mov rax, 0x0
+
+        mov ax, [rbx + 0x55]
+
+        and ax, 0xFC0F
+
+        mov [rbx + 0x55],ax
+
+        pop rax
+
+        mov ebp, 0x1000
+        ",
+        options(nomem, nostack)
+    );
+
+    std::arch::asm!(
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        options(nomem, nostack)
+    );
+}
+
+// #[inline(never)]
+// pub(crate) unsafe extern "system" fn damage_mul() {
+//     std::arch::asm!(
+//         "
+//         push r10
+//         ",
+//         options(nomem, nostack)
+//     );
+
+//     std::arch::asm!(
+//         "
+//         mov r10d, 0x64
+
+//         imul eax, r10d
+//         mov esi, eax
+//         mov [rsp + 0x48], eax
+//         ",
+//         options(nomem, nostack)
+//     );
+
+//     std::arch::asm!(
+//         "
+//         pop r10
+//         ",
+//         options(nomem, nostack)
+//     );
+
+//     std::arch::asm!(
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         "nop",
+//         options(nomem, nostack)
+//     );
+// }
