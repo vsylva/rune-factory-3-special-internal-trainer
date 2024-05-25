@@ -1,35 +1,17 @@
-# Rune Factory 3 Trainer / 符文工房3修改器
-
 ![menu](res/menu.png)
 
-## 下载
-
-https://github.com/vSylva/rune_factory_3_trainer/releases
-
-## 使用方式
-
-将 **xinput1_4.dll** 放入游戏根目录中，启动游戏等待游戏窗口正常化后会自动显示UI
-
-## 备注
+## Important
 
 游戏版本: 1.0.4
 
-若是**角色不能移动**，将游戏窗口最小化在打开就可以
+## Download
 
-遇到 bug 可以提交 issue
+https://github.com/vSylva/rune_factory_3_trainer/releases
 
-## 编译
+## Installation
 
-安装 Visual Studio 2022 C++ 构建工具
+将 **xinput1_4.dll** 放入游戏根目录中
 
-安装 Rust 工具链
-
-git clone https://github.com/vSylva/rune_factory_3_trainer.git
-
-```rust
-cargo +stable build --release
-```
-
-## Reference/引用
+## Reference
 
 https://fearlessrevolution.com/viewtopic.php?t=25714
