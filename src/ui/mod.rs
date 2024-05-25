@@ -1,9 +1,13 @@
-use hudhook_mini::RenderContext;
-
 mod component;
-
+mod menu;
 mod style;
-mod window;
+
+use hudhook::{windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState, RenderContext};
+
+use crate::{
+    hook::{SAVE_LOAD_HOOK, SAVE_LOAD_MARK},
+    ui::menu::on_frame,
+};
 
 pub(crate) static mut IS_SHOW_UI: bool = true;
 
@@ -28,62 +32,6 @@ static mut TIME_YEAR_SELECTED: u8 = 1;
 static mut TIME_YEAR_LIST: Vec<u8> = Vec::new();
 static mut TIME_SLOW_MUL_SELECTED: TimeSlowMul = TimeSlowMul::默认;
 static mut TIME_SLOW_MUL_LIST: Vec<TimeSlowMul> = Vec::new();
-
-pub(crate) struct RenderLoop;
-
-impl hudhook_mini::ImguiRenderLoop for RenderLoop {
-    fn initialize<'a>(
-        &'a mut self,
-        _ctx: &mut hudhook_mini::imgui::Context,
-        _render_context: &'a mut dyn RenderContext,
-    ) {
-        unsafe {
-            _ctx.set_ini_filename(None);
-
-            crate::ui::style::set_dark_red_style(_ctx);
-            crate::ui::style::set_font(_ctx, 20.0);
-
-            for crop_type in <CropType as strum::IntoEnumIterator>::iter() {
-                CROP_TYPE_LIST.push(crop_type)
-            }
-
-            for crop_level in <CropLevel as strum::IntoEnumIterator>::iter() {
-                CROP_LEVEL_LIST.push(crop_level)
-            }
-
-            for crop_growth_stage in <CropGrowthStage as strum::IntoEnumIterator>::iter() {
-                CROP_GROWTH_STAGE_LIST.push(crop_growth_stage)
-            }
-
-            for second in 0..60 {
-                TIME_SECOND_LIST.push(second);
-            }
-
-            for hour in 0..24 {
-                TIME_HOUR_LIST.push(hour);
-            }
-
-            for day in 1..31 {
-                TIME_DAY_LIST.push(day);
-            }
-
-            for season in <Season as strum::IntoEnumIterator>::iter() {
-                TIME_SEASON_LIST.push(season);
-            }
-
-            for year in 1..100 {
-                TIME_YEAR_LIST.push(year);
-            }
-
-            for time_slow_mul in <TimeSlowMul as strum::IntoEnumIterator>::iter() {
-                TIME_SLOW_MUL_LIST.push(time_slow_mul)
-            }
-        }
-    }
-    fn render(&mut self, ui: &mut hudhook_mini::imgui::Ui) {
-        unsafe { window::window(ui) }
-    }
-}
 
 #[derive(
     Debug,
@@ -306,4 +254,130 @@ pub(crate) enum CropGrowthStage {
     三阶段 = 0x3,
     四阶段 = 0x4,
     五阶段 = 0x5,
+}
+
+pub(crate) struct Ui;
+
+impl hudhook::ImguiRenderLoop for Ui {
+    fn initialize<'a>(
+        &'a mut self,
+        _ctx: &mut hudhook::imgui::Context,
+        _render_context: &'a mut dyn RenderContext,
+    ) {
+        unsafe {
+            _ctx.set_ini_filename(None);
+
+            // crate::ui::style::set_dark_red_style(_ctx);
+            _ctx.style_mut().use_light_colors();
+            crate::ui::style::set_font(_ctx, 25.0);
+
+            for crop_type in <CropType as strum::IntoEnumIterator>::iter() {
+                CROP_TYPE_LIST.push(crop_type)
+            }
+
+            for crop_level in <CropLevel as strum::IntoEnumIterator>::iter() {
+                CROP_LEVEL_LIST.push(crop_level)
+            }
+
+            for crop_growth_stage in <CropGrowthStage as strum::IntoEnumIterator>::iter() {
+                CROP_GROWTH_STAGE_LIST.push(crop_growth_stage)
+            }
+
+            for second in 0..60 {
+                TIME_SECOND_LIST.push(second);
+            }
+
+            for hour in 0..24 {
+                TIME_HOUR_LIST.push(hour);
+            }
+
+            for day in 1..31 {
+                TIME_DAY_LIST.push(day);
+            }
+
+            for season in <Season as strum::IntoEnumIterator>::iter() {
+                TIME_SEASON_LIST.push(season);
+            }
+
+            for year in 1..100 {
+                TIME_YEAR_LIST.push(year);
+            }
+
+            for time_slow_mul in <TimeSlowMul as strum::IntoEnumIterator>::iter() {
+                TIME_SLOW_MUL_LIST.push(time_slow_mul)
+            }
+        }
+    }
+
+    fn before_render<'a>(
+        &'a mut self,
+        _ctx: &mut hudhook::imgui::Context,
+        _render_context: &'a mut dyn RenderContext,
+    ) {
+        unsafe {
+            if is_key_down_once(0xC0) {
+                IS_SHOW_UI = !IS_SHOW_UI;
+            }
+
+            if !IS_SHOW_UI {
+                _ctx.io_mut().mouse_draw_cursor = false;
+
+                return;
+            }
+
+            _ctx.io_mut().mouse_draw_cursor = true;
+        }
+    }
+
+    fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
+        unsafe {
+            if !IS_SHOW_UI {
+                return;
+            }
+
+            ui.window("符文工房3修改器\t[~]键打开/关闭菜单")
+                .title_bar(true)
+                .size([600.0, 450.0], hudhook::imgui::Condition::FirstUseEver)
+                .collapsible(true)
+                .movable(true)
+                .build(|| {
+                    static ONCE: ::std::sync::Once = ::std::sync::Once::new();
+                    ONCE.call_once(|| {
+                        SAVE_LOAD_HOOK.is_enabled = true;
+                        SAVE_LOAD_HOOK.switch();
+                    });
+
+                    if SAVE_LOAD_MARK == 0 {
+                        component::loading_bar("等待载入存档...\0");
+
+                        return;
+                    }
+
+                    static ONCE1: ::std::sync::Once = ::std::sync::Once::new();
+                    ONCE1.call_once(|| {
+                        SAVE_LOAD_HOOK.is_enabled = false;
+                        SAVE_LOAD_HOOK.switch();
+
+                        minhook_raw::remove_hook(SAVE_LOAD_HOOK.target_addr);
+                    });
+
+                    on_frame(ui)
+                });
+        }
+    }
+}
+
+pub(crate) unsafe fn is_key_down_once(virtual_key_code: i32) -> bool {
+    static mut WAS_KEY_DOWN: bool = false;
+
+    if (GetAsyncKeyState(virtual_key_code) as u16 & 0x8000) != 0 {
+        if !WAS_KEY_DOWN {
+            WAS_KEY_DOWN = true;
+            return true;
+        }
+    } else if WAS_KEY_DOWN {
+        WAS_KEY_DOWN = false;
+    }
+
+    false
 }
