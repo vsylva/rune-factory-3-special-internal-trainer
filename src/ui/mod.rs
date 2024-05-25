@@ -338,7 +338,6 @@ impl hudhook::ImguiRenderLoop for Ui {
             ui.window("符文工房3修改器\t[~]键打开/关闭菜单")
                 .title_bar(true)
                 .size([600.0, 450.0], hudhook::imgui::Condition::FirstUseEver)
-                .collapsible(true)
                 .movable(true)
                 .build(|| {
                     static ONCE: ::std::sync::Once = ::std::sync::Once::new();
