@@ -10,7 +10,7 @@ https://github.com/vSylva/rune_factory_3_trainer/releases
 
 ## Installation
 
-将 **xinput1_4.dll** 放入游戏根目录中
+将 **dll** 放入游戏根目录中，或，用注入工具将 **dll** 注入游戏进程
 
 ## Reference
 
