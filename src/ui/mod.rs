@@ -2,7 +2,14 @@ mod component;
 mod menu;
 mod style;
 
-use hudhook::{windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState, RenderContext};
+use hudhook::{
+    imgui::{
+        internal::RawCast,
+        sys::{ImFontAtlas_AddFontFromFileTTF, ImFontAtlas_GetGlyphRangesChineseFull},
+    },
+    windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState,
+    RenderContext,
+};
 
 use crate::{
     hook::{SAVE_LOAD_HOOK, SAVE_LOAD_MARK},
@@ -269,7 +276,14 @@ impl hudhook::ImguiRenderLoop for Ui {
 
             // crate::ui::style::set_dark_red_style(_ctx);
             _ctx.style_mut().use_light_colors();
-            crate::ui::style::set_font(_ctx, 25.0);
+
+            ImFontAtlas_AddFontFromFileTTF(
+                _ctx.fonts().raw_mut(),
+                "C:\\windows\\fonts\\simhei.ttf\0".as_ptr().cast(),
+                20.0,
+                std::ptr::null(),
+                ImFontAtlas_GetGlyphRangesChineseFull(_ctx.fonts().raw_mut()),
+            );
 
             for crop_type in <CropType as strum::IntoEnumIterator>::iter() {
                 CROP_TYPE_LIST.push(crop_type)
@@ -335,7 +349,7 @@ impl hudhook::ImguiRenderLoop for Ui {
                 return;
             }
 
-            ui.window("[~]键 打开/关闭菜单")
+            ui.window("[~]键")
                 .title_bar(true)
                 .size([600.0, 450.0], hudhook::imgui::Condition::FirstUseEver)
                 .build(|| {
