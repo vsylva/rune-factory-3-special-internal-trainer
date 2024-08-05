@@ -10,6 +10,11 @@ unsafe extern "system" fn DllMain(
     _lp_reserved: *mut core::ffi::c_void,
 ) -> i32 {
     if ul_reason_for_call == 1 {
+
+        let _ = hudhook::windows::Win32::System::LibraryLoader::DisableThreadLibraryCalls(
+            hudhook::windows::Win32::Foundation::HMODULE(h_module),
+        );
+
         std::thread::spawn(move || {
             let now = ::std::time::Instant::now();
             let dur = ::std::time::Duration::from_secs(1);
