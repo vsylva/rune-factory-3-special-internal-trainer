@@ -128,7 +128,7 @@ pub(crate) unsafe fn crop_instant_growth_swtich(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn farm_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启农田面板", &mut FARM_HOOK.is_enabled) {
+    if ui.checkbox("开启##farm", &mut FARM_HOOK.is_enabled) {
         FARM_HOOK.switch();
 
         if !FARM_HOOK.is_enabled {
@@ -273,7 +273,7 @@ pub(crate) unsafe fn clear_crop(ui: &hudhook::imgui::Ui) {
 }
 
 pub(crate) unsafe fn time_swtich(ui: &hudhook::imgui::Ui) {
-    if ui.checkbox("开启时间面板", &mut TIME_HOOK.is_enabled) {
+    if ui.checkbox("开启##time", &mut TIME_HOOK.is_enabled) {
         TIME_HOOK.switch()
     }
 }
