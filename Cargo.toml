@@ -11,14 +11,13 @@ name = "xinput1_4"
 crate-type = ["cdylib"]
 
 [dependencies]
+libmem = "5.0.1"
 minhook_raw = "0.3.0"
-vcheat = "0.6.6"
-hudhook = { version = "0.7.1", default-features = false, features = [
+hudhook = { git = "https://github.com/veeenu/hudhook.git", rev = "9c78aa5", default-features = false, features = [
     "dx11",
 ] }
-
 strum = "0.26.3"
 strum_macros = "0.26.4"
 
 [build-dependencies]
-forward-dll-mini = "0.1.16"
+forward-dll = "0.1.16"

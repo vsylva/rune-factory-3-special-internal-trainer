@@ -1,5 +1,4 @@
-#[inline(never)]
-pub(crate) unsafe extern "system" fn save_load() {
+pub(crate) unsafe fn save_load() {
     std::arch::asm!(
         "
     shl ax, 0x5
@@ -41,8 +40,7 @@ pub(crate) unsafe extern "system" fn save_load() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn auto_fishing() {
+pub(crate) unsafe fn auto_fishing() {
     std::arch::asm!(
         "
         movzx ecx, word ptr [rax + 0x18]
@@ -60,7 +58,7 @@ pub(crate) unsafe extern "system" fn auto_fishing() {
 
     std::arch::asm!(
         "
-        je 0f
+        je 2f
         mov word ptr [rax], 0x1
         ",
         in("rax") ::std::ptr::addr_of!(crate::hook::AUTO_PRESS_MARK),
@@ -69,8 +67,8 @@ pub(crate) unsafe extern "system" fn auto_fishing() {
 
     std::arch::asm!(
         "
-        jmp 1f
-        0:
+        jmp 3f
+        2:
         mov word ptr [rax], 0x0
         ",
         in("rax") ::std::ptr::addr_of!(crate::hook::AUTO_PRESS_MARK),
@@ -78,7 +76,7 @@ pub(crate) unsafe extern "system" fn auto_fishing() {
 
     std::arch::asm!(
         "
-        1:
+        3:
         cmp cx, 0x3
         ",
         options(nomem, nostack)
@@ -112,8 +110,7 @@ pub(crate) unsafe extern "system" fn auto_fishing() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn auto_press() {
+pub(crate) unsafe fn auto_press() {
     std::arch::asm!(
         "
         not dx
@@ -139,10 +136,10 @@ pub(crate) unsafe extern "system" fn auto_press() {
 
     std::arch::asm!(
         "
-        jne 0f
+        jne 2f
         mov dx, 0x2
 
-        0:
+        2:
         ",
         options(nomem, nostack)
     );
@@ -175,8 +172,7 @@ pub(crate) unsafe extern "system" fn auto_press() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn walk_through_walls() {
+pub(crate) unsafe fn walk_through_walls() {
     std::arch::asm!(
         "
         mov rsi, rdx
@@ -199,7 +195,7 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
         lea rax, [rcx]
         cmp rbx, rax
         ",
-        in("rax") std::ptr::addr_of_mut!(crate::SANDLL_HANDLE),
+        in("rax") std::ptr::addr_of_mut!(crate::MOD_SANDLL.base),
         options(nomem, nostack)
     );
 
@@ -213,9 +209,9 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
 
     std::arch::asm!(
         "
-        je 0f
+        je 2f
         test rcx, rcx
-        0:
+        2:
         ",
         options(nomem, nostack)
     );
@@ -241,8 +237,7 @@ pub(crate) unsafe extern "system" fn walk_through_walls() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn friendship_mul() {
+pub(crate) unsafe fn friendship_mul() {
     std::arch::asm!(
         "
         push rax
@@ -288,8 +283,7 @@ pub(crate) unsafe extern "system" fn friendship_mul() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn crop_instant_growth() {
+pub(crate) unsafe fn crop_instant_growth() {
     std::arch::asm!(
         "
         mov edx, [rax]
@@ -323,8 +317,7 @@ pub(crate) unsafe extern "system" fn crop_instant_growth() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn skill_exp_mul() {
+pub(crate) unsafe fn skill_exp_mul() {
     std::arch::asm!(
         "
         push rax
@@ -370,8 +363,7 @@ pub(crate) unsafe extern "system" fn skill_exp_mul() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn farm() {
+pub(crate) unsafe fn farm() {
     std::arch::asm!(
         "
         push rax
@@ -383,7 +375,7 @@ pub(crate) unsafe extern "system" fn farm() {
     std::arch::asm!(
         "
         cmp r11,0
-        je 0f
+        je 2f
 
         mov rax, 0x0
         mov eax, dword ptr [rbx + 0x4]
@@ -391,7 +383,7 @@ pub(crate) unsafe extern "system" fn farm() {
         xor eax, 0x38000E
         mov [rbx + 0x4], eax
 
-        0:
+        2:
         ",
         in("r11") crate::hook::SOIL_QUALITY_MARK,
         options(nomem, nostack)
@@ -400,7 +392,7 @@ pub(crate) unsafe extern "system" fn farm() {
     std::arch::asm!(
         "
         cmp r12, 0x0
-        je 1f
+        je 3f
 
         mov rax, 0x0
         mov al, byte ptr[rbx + 0x3]
@@ -408,7 +400,7 @@ pub(crate) unsafe extern "system" fn farm() {
         and al, 0xFB
         mov byte ptr [rbx + 0x3], al
 
-        1:
+        3:
         ",
         in("r12") crate::hook::WATERING_PLOTS_MARK       ,
         options(nomem, nostack)
@@ -417,20 +409,20 @@ pub(crate) unsafe extern "system" fn farm() {
     std::arch::asm!(
         "
         cmp r13, 0x0
-        je 2f
+        je 4f
 
         mov rax, 0x0
         mov al, byte ptr [rbx + 0x3]
         and al, 0x8
         cmp al, 0x8
-        je 2f
+        je 4f
 
         mov al, byte ptr[rbx + 0x3]
         or al, 0x8
         mov byte ptr [rbx + 0x3], al
         mov byte ptr [rbx], 0x0
 
-        2:
+        4:
         ",
         in("r13") crate::hook::TILTH_PLOTS_MARK      ,
         options(nomem, nostack)
@@ -439,7 +431,7 @@ pub(crate) unsafe extern "system" fn farm() {
     std::arch::asm!(
         "
         cmp r14, 0x0
-        je 3f
+        je 5f
 
         mov rax, 0x0
         mov al, byte ptr [rbx + 0x3]
@@ -455,13 +447,13 @@ pub(crate) unsafe extern "system" fn farm() {
 
     std::arch::asm!(
         "
-        jne 3f
+        jne 5f
 
         mov rax, 0x0
         mov ax, word ptr [r15]
         mov word ptr [rbx + 0x0], ax
 
-        3:
+        5:
         ",
         in("r15") std::ptr::addr_of!(crate::hook::CROP_PROP),
         options(nomem, nostack)
@@ -508,8 +500,7 @@ pub(crate) unsafe extern "system" fn farm() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn time() {
+pub(crate) unsafe fn time() {
     std::arch::asm!(
         "
         push rax
@@ -563,8 +554,7 @@ pub(crate) unsafe extern "system" fn time() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn inf_mission() {
+pub(crate) unsafe fn inf_mission() {
     std::arch::asm!(
         "
         mov rbx, [rdx + 0x8]
@@ -604,8 +594,7 @@ pub(crate) unsafe extern "system" fn inf_mission() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn combat_exp_mul() {
+pub(crate) unsafe fn combat_exp_mul() {
     std::arch::asm!(
         "
         push rax
@@ -652,8 +641,7 @@ pub(crate) unsafe extern "system" fn combat_exp_mul() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn tame() {
+pub(crate) unsafe fn tame() {
     std::arch::asm!(
         "
         shr rcx, 0x20
@@ -684,22 +672,15 @@ pub(crate) unsafe extern "system" fn tame() {
     );
 }
 
-#[inline(never)]
-pub(crate) unsafe extern "system" fn no_debuff() {
+pub(crate) unsafe fn no_debuff() {
     std::arch::asm!(
         "
         push rax
-
         mov rax, 0x0
-
         mov ax, [rbx + 0x55]
-
         and ax, 0xFC0F
-
         mov [rbx + 0x55],ax
-
         pop rax
-
         mov ebp, 0x1000
         ",
         options(nomem, nostack)
@@ -726,8 +707,8 @@ pub(crate) unsafe extern "system" fn no_debuff() {
     );
 }
 
-// #[inline(never)]
-// pub(crate) unsafe extern "system" fn damage_mul() {
+//
+// pub(crate) unsafe  fn damage_mul() {
 //     std::arch::asm!(
 //         "
 //         push r10

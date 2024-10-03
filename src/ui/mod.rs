@@ -370,7 +370,7 @@ impl hudhook::ImguiRenderLoop for Ui {
                         SAVE_LOAD_HOOK.is_enabled = false;
                         SAVE_LOAD_HOOK.switch();
 
-                        minhook_raw::remove_hook(SAVE_LOAD_HOOK.target_addr);
+                        minhook_raw::remove_hook(SAVE_LOAD_HOOK.target_addr as *mut ::core::ffi::c_void);
                     });
 
                     on_frame(ui)
