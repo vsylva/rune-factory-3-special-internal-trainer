@@ -314,7 +314,14 @@ impl hudhook::ImguiRenderLoop for 修改器 {
         ui.window("[~]键")
             .title_bar(true)
             .size([600.0, 450.0], hudhook::imgui::Condition::FirstUseEver)
-            .build(|| self.每帧渲染(ui));
+            .build(|| {
+                if crate::hook::HOOK.时间指针.is_null() {
+                    ui.text_colored([1.0, 0.0, 0.0, 1.0], "等待开始游戏......");
+                    return;
+                };
+
+                self.每帧渲染(ui)
+            });
     }
 }
 
