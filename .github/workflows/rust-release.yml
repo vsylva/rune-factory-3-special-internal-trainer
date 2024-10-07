@@ -1,0 +1,46 @@
+name: Rust Release
+
+on:
+  push:
+    tags: "v*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        arch:
+          # - i686
+          - x86_64
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Rust Toolchain
+        run: rustup default stable-${{ matrix.arch }}-pc-windows-msvc
+
+      - name: Build Release Artifacts
+        run: cargo build --release
+
+      - name: Create Release Archive
+        run: |
+          Get-ChildItem -Path "target/release/" -Filter "*.dll" | Select-Object -First 1 | ForEach-Object { Compress-Archive -Path $_.FullName -DestinationPath ("${{ matrix.arch }}" + ".zip") }
+
+      - name: Generate Changelog
+        run: git log -1 --pretty=format:"%s%n%b" > CHANGELOG.md
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG.md
+          prerelease: false
+          files: ${{ matrix.arch }}.zip
+          fail_on_unmatched_files: true

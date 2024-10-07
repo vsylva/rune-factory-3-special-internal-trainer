@@ -1,6 +1,5 @@
 [package]
-name = "RuneFactory3SpecialInternalTrainer"
-version = "0.4.1"
+name = "rune-factory-3-internal-trainer"
 edition = "2021"
 authors = ["vsylva"]
 publish = false

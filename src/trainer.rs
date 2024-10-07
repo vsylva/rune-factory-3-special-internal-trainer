@@ -330,20 +330,34 @@ impl 修改器 {
         if let Some(tab_bar) = ui.tab_bar("#tab_bar") {
             if let Some(tab_item) = ui.tab_item("功能") {
                 if ui.checkbox("最高金币", &mut crate::hook::HOOK.金币max开关) {
-                    if crate::hook::HOOK.金币max开关 {
-                        crate::hook::HOOK.金币旧值 = *crate::hook::HOOK.金币地址;
-                        *crate::hook::HOOK.金币地址 = 99999999;
-                    } else {
-                        *crate::hook::HOOK.金币地址 = crate::hook::HOOK.金币旧值;
+                    if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
+                        Some(crate::hook::HOOK.金币地址.cast()),
+                        4,
+                    )
+                    .as_bool()
+                    {
+                        if crate::hook::HOOK.金币max开关 {
+                            crate::hook::HOOK.金币旧值 = *crate::hook::HOOK.金币地址;
+                            *crate::hook::HOOK.金币地址 = 99999999;
+                        } else {
+                            *crate::hook::HOOK.金币地址 = crate::hook::HOOK.金币旧值;
+                        }
                     }
                 }
 
                 if ui.checkbox("最高木材", &mut crate::hook::HOOK.木头max开关) {
-                    if crate::hook::HOOK.木头max开关 {
-                        crate::hook::HOOK.木头旧值 = *crate::hook::HOOK.木头地址;
-                        *crate::hook::HOOK.木头地址 = 16383;
-                    } else {
-                        *crate::hook::HOOK.木头地址 = crate::hook::HOOK.木头旧值;
+                    if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
+                        Some(crate::hook::HOOK.木头地址.cast()),
+                        4,
+                    )
+                    .as_bool()
+                    {
+                        if crate::hook::HOOK.木头max开关 {
+                            crate::hook::HOOK.木头旧值 = *crate::hook::HOOK.木头地址;
+                            *crate::hook::HOOK.木头地址 = 0x3FFF;
+                        } else {
+                            *crate::hook::HOOK.木头地址 = crate::hook::HOOK.木头旧值;
+                        }
                     }
                 }
 
