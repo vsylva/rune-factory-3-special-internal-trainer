@@ -23,12 +23,14 @@ pub(crate) struct 修改器 {
 }
 
 #[repr(C)]
+
 pub(crate) struct 作物属性_结构体 {
     pub(crate) 类型: u8,
     pub(crate) 状态: 作物状态_联合体,
 }
 
 #[repr(C)]
+
 pub(crate) union 作物状态_联合体 {
     pub(crate) 生长阶段: u8,
     pub(crate) 等级: u8,
@@ -46,6 +48,7 @@ pub(crate) union 作物状态_联合体 {
     strum_macros::EnumIter,
     strum_macros::Display,
 )]
+
 pub(crate) enum 季节 {
     春 = 0,
     夏 = 1,
@@ -66,6 +69,7 @@ pub(crate) enum 季节 {
     strum_macros::Display,
     strum_macros::EnumString,
 )]
+
 pub(crate) enum 时间流速 {
     暂停时间 = 0,
     #[strum(serialize = "0.01倍")]
@@ -95,6 +99,7 @@ pub(crate) enum 时间流速 {
     strum_macros::EnumIter,
     strum_macros::Display,
 )]
+
 pub(crate) enum 作物类型 {
     无 = 0,
 
@@ -175,8 +180,8 @@ pub(crate) enum 作物类型 {
     金芜青 = 69,
     火热果实 = 70,
 
-    白草 = 71, // 可捡
-               //从72开始的编号都是无效的东西
+    白草 = 71, /* 可捡
+                * 从72开始的编号都是无效的东西 */
 }
 
 #[derive(
@@ -217,6 +222,7 @@ pub(crate) enum 作物等级 {
     strum_macros::EnumIter,
     strum_macros::Display,
 )]
+
 pub(crate) enum 作物生长阶段 {
     // 无 = 0,
     一阶段 = 0x1,
@@ -228,6 +234,7 @@ pub(crate) enum 作物生长阶段 {
 
 impl hudhook::ImguiRenderLoop for 修改器 {
     #[unsafe_fn_body::unsafe_fn_body]
+
     fn initialize<'a>(
         &'a mut self,
         _ctx: &mut hudhook::imgui::Context,
@@ -287,6 +294,7 @@ impl hudhook::ImguiRenderLoop for 修改器 {
     }
 
     #[unsafe_fn_body::unsafe_fn_body]
+
     fn before_render<'a>(
         &'a mut self,
         _ctx: &mut hudhook::imgui::Context,
@@ -306,6 +314,7 @@ impl hudhook::ImguiRenderLoop for 修改器 {
     }
 
     #[unsafe_fn_body::unsafe_fn_body]
+
     fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
         if !self.显示界面 {
             return;
@@ -317,6 +326,7 @@ impl hudhook::ImguiRenderLoop for 修改器 {
             .build(|| {
                 if crate::hook::HOOK.时间指针.is_null() {
                     ui.text_colored([1.0, 0.0, 0.0, 1.0], "等待开始游戏......");
+
                     return;
                 };
 
@@ -337,10 +347,11 @@ impl 修改器 {
                     .as_bool()
                     {
                         if crate::hook::HOOK.金币max开关 {
-                            crate::hook::HOOK.金币旧值 = *crate::hook::HOOK.金币地址;
-                            *crate::hook::HOOK.金币地址 = 99999999;
+                            crate::hook::HOOK.金币旧值 = crate::hook::HOOK.金币地址.read();
+
+                            crate::hook::HOOK.金币地址.write(9999999);
                         } else {
-                            *crate::hook::HOOK.金币地址 = crate::hook::HOOK.金币旧值;
+                            crate::hook::HOOK.金币地址.write(crate::hook::HOOK.金币旧值);
                         }
                     }
                 }
@@ -353,10 +364,11 @@ impl 修改器 {
                     .as_bool()
                     {
                         if crate::hook::HOOK.木头max开关 {
-                            crate::hook::HOOK.木头旧值 = *crate::hook::HOOK.木头地址;
-                            *crate::hook::HOOK.木头地址 = 0x3FFF;
+                            crate::hook::HOOK.木头旧值 = crate::hook::HOOK.木头地址.read();
+
+                            crate::hook::HOOK.木头地址.write(0x3FFF);
                         } else {
-                            *crate::hook::HOOK.木头地址 = crate::hook::HOOK.木头旧值;
+                            crate::hook::HOOK.木头地址.write(crate::hook::HOOK.木头旧值);
                         }
                     }
                 }
@@ -365,6 +377,7 @@ impl 修改器 {
                     crate::hook::HOOK.自动钓鱼.切换开关();
 
                     crate::hook::HOOK.自动按键.开关 = crate::hook::HOOK.自动钓鱼.开关;
+
                     crate::hook::HOOK.自动按键.切换开关();
                 }
 
@@ -381,6 +394,7 @@ impl 修改器 {
                 {
                     crate::hook::HOOK.技能经验倍率.切换开关()
                 }
+
                 if ui.checkbox("百倍战斗经验", &mut crate::hook::HOOK.战斗经验倍率.开关)
                 {
                     crate::hook::HOOK.战斗经验倍率.切换开关()
@@ -402,15 +416,15 @@ impl 修改器 {
                     crate::hook::HOOK.伤害倍率.切换开关()
                 }
 
+                tab_item.end();
+            }
+
+            if let Some(tab_item) = ui.tab_item("农田") {
                 if ui.checkbox("作物即时成熟", &mut crate::hook::HOOK.作物立即长成.开关)
                 {
                     crate::hook::HOOK.作物立即长成.切换开关()
                 }
 
-                tab_item.end();
-            }
-
-            if let Some(tab_item) = ui.tab_item("农田") {
                 if ui.checkbox("耕作所有土地", &mut crate::hook::HOOK.自动耕作开关) {
                     if crate::hook::HOOK.自动耕作开关 {
                         crate::hook::HOOK.自动耕作标签 = 1;
@@ -459,10 +473,12 @@ impl 修改器 {
                                 self.选择的作物 = *current;
                             }
                         }
+
                         cb.end();
                     }
 
                     ui.same_line();
+
                     if ui.button("设置##类型") {
                         crate::hook::HOOK.作物属性.设置作物类型(self.选择的作物);
                     }
@@ -482,10 +498,12 @@ impl 修改器 {
                                 self.选择的作物等级 = *current;
                             }
                         }
+
                         cb.end();
                     }
 
                     ui.same_line();
+
                     if ui.button("设置##等级") {
                         crate::hook::HOOK.作物属性.设置作物等级(self.选择的作物等级);
                     }
@@ -506,10 +524,12 @@ impl 修改器 {
                                 self.选择的作物生长阶段 = *current;
                             }
                         }
+
                         cb.end();
                     }
 
                     ui.same_line();
+
                     if ui.button("设置##阶段") {
                         crate::hook::HOOK
                             .作物属性
@@ -518,6 +538,7 @@ impl 修改器 {
 
                     if ui.button("清除农田作物") {
                         self.选择的作物 = 作物类型::无;
+
                         crate::hook::HOOK.作物属性.设置作物类型(作物类型::无);
                     }
                 }
@@ -540,13 +561,16 @@ impl 修改器 {
                             self.选择的秒 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##秒") {
-                    (*crate::hook::HOOK.时间指针).设置秒(self.选择的秒);
+                    (*crate::hook::HOOK.时间指针).秒 = self.选择的秒;
                 }
+
                 if let Some(cb) = ui.begin_combo("小时", self.选择的时.to_string()) {
                     for current in &self.时列表 {
                         if self.选择的时 == *current {
@@ -561,12 +585,14 @@ impl 修改器 {
                             self.选择的时 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##时") {
-                    (*crate::hook::HOOK.时间指针).设置时(self.选择的时);
+                    (*crate::hook::HOOK.时间指针).时 = self.选择的时;
                 }
 
                 if let Some(cb) = ui.begin_combo("天", self.选择的天.to_string()) {
@@ -583,12 +609,14 @@ impl 修改器 {
                             self.选择的天 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##天") {
-                    (*crate::hook::HOOK.时间指针).设置天(self.选择的天);
+                    (*crate::hook::HOOK.时间指针).天 = self.选择的天;
                 }
 
                 if let Some(cb) = ui.begin_combo("季节", self.选择的季节.to_string()) {
@@ -605,12 +633,14 @@ impl 修改器 {
                             self.选择的季节 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##季节") {
-                    (*crate::hook::HOOK.时间指针).设置季节(self.选择的季节 as u8);
+                    (*crate::hook::HOOK.时间指针).季节 = self.选择的季节 as u8;
                 }
 
                 if let Some(cb) = ui.begin_combo("年", self.选择的年.to_string()) {
@@ -627,12 +657,14 @@ impl 修改器 {
                             self.选择的年 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##年") {
-                    (*crate::hook::HOOK.时间指针).设置年(self.选择的年);
+                    (*crate::hook::HOOK.时间指针).年 = self.选择的年;
                 }
 
                 if let Some(cb) = ui.begin_combo("流速", self.选择的流速.to_string()) {
@@ -649,23 +681,28 @@ impl 修改器 {
                             self.选择的流速 = *current;
                         }
                     }
+
                     cb.end();
                 }
 
                 ui.same_line();
+
                 if ui.button("设置##流速") {
-                    (*crate::hook::HOOK.时间指针).设置流速(self.选择的流速 as u32);
+                    (*crate::hook::HOOK.时间指针).流速 = self.选择的流速 as u32;
                 }
 
                 if ui.button("暂停时间") {
                     self.选择的流速 = 时间流速::暂停时间;
-                    (*crate::hook::HOOK.时间指针).设置流速(self.选择的流速 as u32);
+
+                    (*crate::hook::HOOK.时间指针).流速 = self.选择的流速 as u32;
                 }
 
                 ui.same_line();
+
                 if ui.button("恢复时间") {
                     self.选择的流速 = 时间流速::默认;
-                    (*crate::hook::HOOK.时间指针).设置流速(时间流速::默认 as u32);
+
+                    (*crate::hook::HOOK.时间指针).流速 = self.选择的流速 as u32;
                 }
 
                 tab_item.end();
@@ -681,16 +718,19 @@ impl 作物属性_结构体 {
         if v as u8 == 0 {
             self.类型 = 0;
         }
+
         self.类型 = (v as u8) << 1;
     }
 
     pub(crate) unsafe fn 设置作物生长阶段(&mut self, v: 作物生长阶段) {
         self.状态.生长阶段 &= 0b0000_1111;
+
         self.状态.生长阶段 |= (v as u8) << 4;
     }
 
     pub(crate) unsafe fn 设置作物等级(&mut self, v: 作物等级) {
         self.状态.等级 &= 0b0111_0000;
+
         self.状态.等级 |= v as u8;
     }
 }
@@ -705,6 +745,7 @@ pub(crate) unsafe fn 按键被按下一次(virtual_key_code: i32) -> bool {
     {
         if !按键按下 {
             按键按下 = true;
+
             return true;
         }
     } else if 按键按下 {

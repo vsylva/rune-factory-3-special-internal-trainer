@@ -57,13 +57,18 @@ pub struct 汇编Hook {
 
 #[repr(C)]
 pub(crate) struct 时间_结构体 {
-    秒: [u8; 4],
-    时: [u8; 4],
-    天: [u8; 4],
-    季节: [u8; 4],
-    年: [u8; 4],
-    __: [u8; 32],
-    流速: u32,
+    pub(crate) 秒: u8,
+    __: [u8; 3],
+    pub(crate) 时: u8,
+    ___: [u8; 3],
+    pub(crate) 天: u8,
+    ____: [u8; 3],
+    pub(crate) 季节: u8,
+    _____: [u8; 3],
+    pub(crate) 年: u8,
+    ______: [u8; 3],
+    _______: [u8; 32],
+    pub(crate) 流速: u32,
 }
 
 impl Hook {
@@ -204,33 +209,6 @@ impl 汇编Hook {
         }
     }
 }
-
-impl 时间_结构体 {
-    pub(crate) fn 设置秒(&mut self, second: u8) {
-        (*self).秒[0] = second;
-    }
-
-    pub(crate) fn 设置时(&mut self, hour: u8) {
-        (*self).时[0] = hour;
-    }
-
-    pub(crate) fn 设置天(&mut self, day: u8) {
-        (*self).天[0] = day;
-    }
-
-    pub(crate) fn 设置季节(&mut self, season: u8) {
-        (*self).季节[0] = season;
-    }
-
-    pub(crate) fn 设置年(&mut self, year: u8) {
-        (*self).年[0] = year;
-    }
-
-    pub(crate) fn 设置流速(&mut self, time_slow_mul: u32) {
-        self.流速 = time_slow_mul;
-    }
-}
-
 pub(crate) static mut HOOK: Hook = Hook::new();
 
 pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
