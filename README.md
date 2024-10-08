@@ -1,7 +1,4 @@
-# 项目
-
-![demo](assets/images/demo.png)
-
-## 安装
-
-从 Releases 页面中下载，然后将 .dll 放入游戏根目录中。
+<div align="center">
+  <img src="assets/images/demo.png" alt="" width="600px"></div>
+<br />
+<div align="center" style="background-color: black;">从 Releases 页面中下载，然后将 .dll 放入游戏根目录中。</div>
