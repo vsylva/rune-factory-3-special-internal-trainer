@@ -120,7 +120,9 @@ impl Hook {
 
             作物属性: crate::trainer::作物属性_结构体 {
                 类型: 0,
-                状态: crate::trainer::作物状态_联合体 { 生长阶段: 0 },
+                状态: crate::trainer::作物状态_联合体 {
+                    生长阶段: 0,
+                },
             },
 
             时间: 汇编Hook::new(),
