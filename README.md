@@ -1,17 +1,7 @@
-![menu](res/menu.png)
+# 项目
 
-## Important
+![demo](assets/images/demo.png)
 
-游戏版本: 1.0.4
+## 安装
 
-## Download
-
-https://github.com/vSylva/rune_factory_3_trainer/releases
-
-## Installation
-
-将 **dll** 放入游戏根目录中，或，用注入工具将 **dll** 注入游戏进程
-
-## Reference
-
-https://fearlessrevolution.com/viewtopic.php?t=25714
+从 Releases 页面中下载，然后将 .dll 放入游戏根目录中。
