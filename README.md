@@ -1,4 +1,4 @@
 <div align="center">
-  <img src="assets/images/demo.png" alt="" width="800px"></div>
+  <img src="assets/images/demo.png" alt="" width="600px"></div>
 <br />
-<div align="center" style="background-color: black;">从 Releases 页面中下载，然后将 .dll 放入游戏根目录中。</div>
+<div align="center" style="font-size: 20px">从 Releases 下载，然后将 dll 置于游戏根目录</div>
