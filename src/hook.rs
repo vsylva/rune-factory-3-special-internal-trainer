@@ -182,7 +182,7 @@ impl 汇编Hook {
         远跳转指令.extend_from_slice((原指令的下一指令地址 as isize).to_le_bytes().as_ref());
 
         libmem::write_memory_ex(
-            &libmem::find_process("Rune Factory 3 Special.exe")?,
+            &libmem::get_process().unwrap(),
             跳转地址.byte_add(扫描结束的偏移) as usize,
             远跳转指令.as_slice(),
         )?;

@@ -1,12 +1,10 @@
 [package]
 name = "rune-factory-3-internal-trainer"
 edition = "2021"
-authors = ["vsylva"]
 publish = false
-license = "MIT"
 
 [lib]
-name = "xinput1_4"
+name = "hid"
 crate-type = ["cdylib"]
 
 [dependencies]
