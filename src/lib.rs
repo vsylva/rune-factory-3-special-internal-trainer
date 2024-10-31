@@ -71,11 +71,12 @@ unsafe fn init(h_module: isize) {
         }
     }
 
-    if let Err(_) = ::hudhook::Hudhook::builder()
+    if ::hudhook::Hudhook::builder()
         .with::<hudhook::hooks::dx11::ImguiDx11Hooks>(修改器temp)
         .with_hmodule(hudhook::windows::Win32::Foundation::HINSTANCE(h_module))
         .build()
         .apply()
+        .is_err()
     {
         ::hudhook::eject();
     }

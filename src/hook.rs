@@ -272,7 +272,7 @@ pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
         8,
         农田 as *mut ::core::ffi::c_void,
     )?;
-    HOOK.农田.打开();
+    (*&raw mut HOOK).农田.打开();
 
     HOOK.时间 = 汇编Hook::创建(
         mod_addr,
@@ -281,7 +281,7 @@ pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
         6,
         时间 as *mut ::core::ffi::c_void,
     )?;
-    HOOK.时间.打开();
+    (*&raw mut HOOK).时间.打开();
 
     HOOK.无限委托 = 汇编Hook::创建(
         mod_addr,
