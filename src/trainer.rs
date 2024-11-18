@@ -460,7 +460,9 @@ impl 修改器 {
         _ctx: &mut hudhook::imgui::Context,
         _render_context: &'a mut dyn hudhook::RenderContext,
     ) {
-        if 按键被按下一次(0xC0) {
+        if 按键被按下一次(
+            hudhook::windows::Win32::UI::Input::KeyboardAndMouse::VK_OEM_3.0 as i32,
+        ) {
             self.显示界面 = !self.显示界面;
         }
 

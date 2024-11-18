@@ -55,7 +55,7 @@ unsafe fn init(h_module: isize) {
 
     while time_begin.elapsed().as_secs() < 60 {
         if let (Some(live2d), Some(sandll)) = (
-            libmem::find_module("Live2DCubism::core.dll"),
+            libmem::find_module("Live2DCubismCore.dll"),
             libmem::find_module("SanDLL.dll"),
         ) {
             if live2d.base != 0 && sandll.base != 0 {
