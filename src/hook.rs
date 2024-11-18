@@ -71,79 +71,12 @@ pub(crate) struct 时间_结构体 {
     pub(crate) 流速: u32,
 }
 
-impl Hook {
-    const fn new() -> Self {
-        Hook {
-            金币地址: ::core::ptr::null_mut(),
-            金币旧值: 0,
-            金币max开关: false,
-
-            木头地址: ::core::ptr::null_mut(),
-            木头旧值: 0,
-            木头max开关: false,
-
-            自动钓鱼: 汇编Hook::new(),
-            自动按键: 汇编Hook::new(),
-            自动按键标签: 0,
-
-            穿墙: 汇编Hook::new(),
-
-            伤害倍率: 汇编Hook::new(),
-
-            居民友谊倍率: 汇编Hook::new(),
-
-            作物立即长成: 汇编Hook::new(),
-
-            技能经验倍率: 汇编Hook::new(),
-
-            无限委托: 汇编Hook::new(),
-
-            战斗经验倍率: 汇编Hook::new(),
-
-            立即驯服: 汇编Hook::new(),
-
-            无负面状态: 汇编Hook::new(),
-
-            农田: 汇编Hook::new(),
-
-            土壤质量开关: false,
-            土壤质量标签: 0,
-
-            自动耕作开关: false,
-            自动耕作标签: 0,
-
-            自动浇水开关: false,
-            自动浇水标签: 0,
-
-            自动种植开关: false,
-            自动种植标签: 0,
-
-            作物属性: crate::trainer::作物属性_结构体 {
-                类型: 0,
-                状态: crate::trainer::作物状态_联合体 {
-                    生长阶段: 0,
-                },
-            },
-
-            时间: 汇编Hook::new(),
-            时间指针: ::core::ptr::null_mut(),
-        }
-    }
-}
-
 impl 汇编Hook {
-    const fn new() -> Self {
-        Self {
-            目标地址: 0,
-            开关: false,
-        }
-    }
-
     unsafe fn 创建(
         模块地址: usize,
         模块大小: usize,
         特征码: &str,
-        原指令大小: usize,
+        原指令占用字节: usize,
         跳转地址: *mut ::core::ffi::c_void,
     ) -> ::core::option::Option<Self> {
         let mut hook = Self {
@@ -153,7 +86,7 @@ impl 汇编Hook {
 
         hook.目标地址 = libmem::sig_scan(特征码, 模块地址, 模块大小)?;
 
-        let 原指令的下一指令地址 = hook.目标地址 + 原指令大小;
+        let 原指令的下一指令地址 = hook.目标地址 + 原指令占用字节;
 
         let mut 扫描结束的偏移 = 0;
 
@@ -161,7 +94,7 @@ impl 汇编Hook {
             let ptr = 跳转地址.cast::<u8>().byte_add(i);
 
             if ptr.read() == 0x90 {
-                let parts = std::slice::from_raw_parts(ptr, 4);
+                let parts = ::std::slice::from_raw_parts(ptr, 4);
 
                 if parts.iter().all(|nop| *nop == 0x90) {
                     扫描结束的偏移 = i;
@@ -188,7 +121,7 @@ impl 汇编Hook {
         )?;
 
         if hudhook::mh::MH_CreateHook(
-            hook.目标地址 as *mut core::ffi::c_void,
+            hook.目标地址 as *mut ::core::ffi::c_void,
             跳转地址,
             ::core::ptr::null_mut(),
         ) != hudhook::mh::MH_STATUS::MH_OK
@@ -200,18 +133,112 @@ impl 汇编Hook {
     }
 
     pub(crate) unsafe fn 打开(&mut self) {
-        let _ = hudhook::mh::MH_EnableHook(self.目标地址 as *mut core::ffi::c_void);
+        let _ = hudhook::mh::MH_EnableHook(self.目标地址 as *mut ::core::ffi::c_void);
     }
 
     pub(crate) unsafe fn 切换开关(&mut self) {
         if self.开关 {
-            let _ = hudhook::mh::MH_EnableHook(self.目标地址 as *mut core::ffi::c_void);
+            let _ = hudhook::mh::MH_EnableHook(self.目标地址 as *mut ::core::ffi::c_void);
         } else {
-            let _ = hudhook::mh::MH_DisableHook(self.目标地址 as *mut core::ffi::c_void);
+            let _ = hudhook::mh::MH_DisableHook(self.目标地址 as *mut ::core::ffi::c_void);
         }
     }
 }
-pub(crate) static mut HOOK: Hook = Hook::new();
+
+pub(crate) static mut HOOK: Hook = Hook {
+    金币地址: ::core::ptr::null_mut(),
+    金币旧值: 0,
+    金币max开关: false,
+
+    木头地址: ::core::ptr::null_mut(),
+    木头旧值: 0,
+    木头max开关: false,
+
+    自动钓鱼: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+    自动按键: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+    自动按键标签: 0,
+
+    穿墙: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    伤害倍率: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    居民友谊倍率: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    作物立即长成: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    技能经验倍率: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    无限委托: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    战斗经验倍率: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    立即驯服: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    无负面状态: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    农田: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+
+    土壤质量开关: false,
+    土壤质量标签: 0,
+
+    自动耕作开关: false,
+    自动耕作标签: 0,
+
+    自动浇水开关: false,
+    自动浇水标签: 0,
+
+    自动种植开关: false,
+    自动种植标签: 0,
+
+    作物属性: crate::trainer::作物属性_结构体 {
+        类型: 0,
+        状态: crate::trainer::作物状态_联合体 {
+            生长阶段: 0,
+        },
+    },
+
+    时间: 汇编Hook {
+        目标地址: 0,
+        开关: false,
+    },
+    时间指针: ::core::ptr::null_mut(),
+};
 pub(crate) const HOOK_MUT: *mut Hook = &raw mut HOOK;
 
 pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
@@ -328,7 +355,7 @@ pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
 }
 
 unsafe fn 自动钓鱼() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         movzx ecx, word ptr [rax + 0x18]
         cmp cx, 0x5
@@ -336,14 +363,14 @@ unsafe fn 自动钓鱼() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         je 2f
         mov word ptr [rax], 0x1
@@ -352,7 +379,7 @@ unsafe fn 自动钓鱼() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         jmp 3f
         2:
@@ -361,7 +388,7 @@ unsafe fn 自动钓鱼() {
         in("rax") &raw const HOOK.自动按键标签,
         options(nostack));
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         3:
         cmp cx, 0x3
@@ -369,14 +396,14 @@ unsafe fn 自动钓鱼() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -398,7 +425,7 @@ unsafe fn 自动钓鱼() {
 }
 
 unsafe fn 自动按提钓竿的键() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         not dx
         and dx, ax
@@ -406,14 +433,14 @@ unsafe fn 自动按提钓竿的键() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         cmp rax, 0x1
         ",
@@ -421,7 +448,7 @@ unsafe fn 自动按提钓竿的键() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         jne 2f
         mov dx, 0x2
@@ -431,14 +458,14 @@ unsafe fn 自动按提钓竿的键() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -460,14 +487,14 @@ unsafe fn 自动按提钓竿的键() {
 }
 
 unsafe fn 穿墙() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov rsi, rdx
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         push rcx
@@ -475,7 +502,7 @@ unsafe fn 穿墙() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov rax, [rax]
         mov rcx, [rax + 0x311F78]
@@ -486,7 +513,7 @@ unsafe fn 穿墙() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rcx
         pop rax
@@ -494,7 +521,7 @@ unsafe fn 穿墙() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         je 2f
         test rcx, rcx
@@ -503,7 +530,7 @@ unsafe fn 穿墙() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -525,14 +552,14 @@ unsafe fn 穿墙() {
 }
 
 unsafe fn 居民友谊倍率() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov eax, 0x64
         mov r9d, edx
@@ -542,14 +569,14 @@ unsafe fn 居民友谊倍率() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -571,7 +598,7 @@ unsafe fn 居民友谊倍率() {
 }
 
 unsafe fn 作物立即长成() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov edx, [rax]
         or edx, 0x5000
@@ -583,7 +610,7 @@ unsafe fn 作物立即长成() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -605,14 +632,14 @@ unsafe fn 作物立即长成() {
 }
 
 unsafe fn 技能经验倍率() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov rax, 0x64
         imul rdx, rax
@@ -622,14 +649,14 @@ unsafe fn 技能经验倍率() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -651,7 +678,7 @@ unsafe fn 技能经验倍率() {
 }
 
 unsafe fn 农田() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         push r11
@@ -659,7 +686,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         cmp r11,0
         je 2f
@@ -676,7 +703,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         cmp r12, 0x0
         je 3f
@@ -693,7 +720,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         cmp r13, 0x0
         je 4f
@@ -715,7 +742,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         cmp r14, 0x0
         je 5f
@@ -732,7 +759,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         jne 5f
 
@@ -742,11 +769,11 @@ unsafe fn 农田() {
 
         5:
         ",
-        in("r15") std::ptr::addr_of!(HOOK.作物属性),
+        in("r15") ::std::ptr::addr_of!(HOOK.作物属性),
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop r11
         pop rax
@@ -758,7 +785,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         add rbx, 0x8
         cmp di, r15w
@@ -766,7 +793,7 @@ unsafe fn 农田() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -788,14 +815,14 @@ unsafe fn 农田() {
 }
 
 unsafe fn 时间() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         lea rax, [r9 + 0x4]
         mov [r15], rax
@@ -804,7 +831,7 @@ unsafe fn 时间() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         pop r15
@@ -812,7 +839,7 @@ unsafe fn 时间() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         add edx, eax
         add [r9 + 0x4], edx
@@ -820,7 +847,7 @@ unsafe fn 时间() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -842,7 +869,7 @@ unsafe fn 时间() {
 }
 
 unsafe fn 无限委托() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov rbx, [rdx + 0x8]
         lea ecx, [r9 - 0x1]
@@ -860,7 +887,7 @@ unsafe fn 无限委托() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -882,14 +909,14 @@ unsafe fn 无限委托() {
 }
 
 unsafe fn 战斗经验倍率() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov eax, 0x64
 
@@ -900,14 +927,14 @@ unsafe fn 战斗经验倍率() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop rax
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -929,7 +956,7 @@ unsafe fn 战斗经验倍率() {
 }
 
 unsafe fn 立即驯服魔物() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         shr rcx, 0x20
         and ecx, 0x7F
@@ -938,7 +965,7 @@ unsafe fn 立即驯服魔物() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -960,7 +987,7 @@ unsafe fn 立即驯服魔物() {
 }
 
 unsafe fn 无负面状态() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push rax
         mov rax, 0x0
@@ -973,7 +1000,7 @@ unsafe fn 无负面状态() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",
@@ -995,14 +1022,14 @@ unsafe fn 无负面状态() {
 }
 
 unsafe fn 伤害倍率() {
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         push r10
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         mov r10d, 0x64
 
@@ -1013,14 +1040,14 @@ unsafe fn 伤害倍率() {
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "
         pop r10
         ",
         options(nostack)
     );
 
-    std::arch::asm!(
+    ::std::arch::asm!(
         "nop",
         "nop",
         "nop",

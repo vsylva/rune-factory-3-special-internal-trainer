@@ -2,11 +2,11 @@ pub(crate) struct 修改器 {
     pub(crate) 显示界面: bool,
 
     pub(crate) 选择的作物: 作物类型,
-    pub(crate) 作物类型列表: Vec<作物类型>,
+    pub(crate) 作物类型列表: &'static [作物类型],
     pub(crate) 选择的作物等级: 作物等级,
-    pub(crate) 作物等级列表: Vec<作物等级>,
+    pub(crate) 作物等级列表: &'static [作物等级],
     pub(crate) 选择的作物生长阶段: 作物生长阶段,
-    pub(crate) 作物生长阶段列表: Vec<作物生长阶段>,
+    pub(crate) 作物生长阶段列表: &'static [作物生长阶段],
 
     pub(crate) 选择的秒: u8,
     pub(crate) 秒列表: Vec<u8>,
@@ -15,40 +15,26 @@ pub(crate) struct 修改器 {
     pub(crate) 选择的天: u8,
     pub(crate) 天列表: Vec<u8>,
     pub(crate) 选择的季节: 季节,
-    pub(crate) 季节列表: Vec<季节>,
+    pub(crate) 季节列表: &'static [季节],
     pub(crate) 选择的年: u8,
     pub(crate) 年列表: Vec<u8>,
     pub(crate) 选择的流速: 时间流速,
-    pub(crate) 时间流速列表: Vec<时间流速>,
+    pub(crate) 时间流速列表: &'static [时间流速],
 }
 
 #[repr(C)]
-
 pub(crate) struct 作物属性_结构体 {
     pub(crate) 类型: u8,
     pub(crate) 状态: 作物状态_联合体,
 }
 
 #[repr(C)]
-
 pub(crate) union 作物状态_联合体 {
     pub(crate) 生长阶段: u8,
     pub(crate) 等级: u8,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Hash,
-    strum_macros::EnumIter,
-    strum_macros::Display,
-)]
-
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub(crate) enum 季节 {
     春 = 0,
     夏 = 1,
@@ -56,50 +42,45 @@ pub(crate) enum 季节 {
     冬 = 3,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Hash,
-    strum_macros::EnumIter,
-    strum_macros::Display,
-    strum_macros::EnumString,
-)]
+impl ::core::fmt::Display for 季节 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match self {
+            Self::春 => write!(f, "春"),
+            Self::夏 => write!(f, "夏"),
+            Self::秋 => write!(f, "秋"),
+            Self::冬 => write!(f, "冬"),
+        }
+    }
+}
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub(crate) enum 时间流速 {
     暂停时间 = 0,
-    #[strum(serialize = "0.01倍")]
     百分之一 = 0x3D,
-    #[strum(serialize = "0.1倍")]
     十分之一 = 0x266,
-    #[strum(serialize = "0.25倍")]
     四分之一 = 0x600,
-    #[strum(serialize = "0.5倍")]
     二分之一 = 0xC00,
     默认 = 0x1800,
-    #[strum(serialize = "1.5倍")]
     一点五 = 0x2400,
-    #[strum(serialize = "2.0倍")]
     两点零 = 0x3000,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Hash,
-    strum_macros::EnumIter,
-    strum_macros::Display,
-)]
+impl ::core::fmt::Display for 时间流速 {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match self {
+            Self::暂停时间 => write!(f, "暂停"),
+            Self::百分之一 => write!(f, "0.01倍"),
+            Self::十分之一 => write!(f, "0.1倍"),
+            Self::四分之一 => write!(f, "0.25倍"),
+            Self::二分之一 => write!(f, "0.5倍"),
+            Self::默认 => write!(f, "默认"),
+            Self::一点五 => write!(f, "1.5倍"),
+            Self::两点零 => write!(f, "2.0倍"),
+        }
+    }
+}
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub(crate) enum 作物类型 {
     无 = 0,
 
@@ -184,19 +165,79 @@ pub(crate) enum 作物类型 {
                 * 从72开始的编号都是无效的东西 */
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Hash,
-    strum_macros::EnumIter,
-    strum_macros::Display,
-)]
+impl ::core::fmt::Display for 作物类型 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::无 => write!(f, "无"),
+            Self::石头 => write!(f, "石头"),
+            Self::岩石 => write!(f, "岩石"),
+            Self::树枝 => write!(f, "树枝"),
+            Self::树桩 => write!(f, "树桩"),
+            Self::木材 => write!(f, "木材"),
+            Self::毒沼 => write!(f, "毒沼"),
+            Self::药草 => write!(f, "药草"),
+            Self::解毒草 => write!(f, "解毒草"),
+            Self::黑草 => write!(f, "黑草"),
+            Self::枯草 => write!(f, "枯草"),
+            Self::黄草 => write!(f, "黄草"),
+            Self::苦橙草 => write!(f, "苦橙草"),
+            Self::杂草 => write!(f, "杂草"),
+            Self::季节岩 => write!(f, "季节岩"),
+            Self::花卉 => write!(f, "花卉"),
+            Self::水晶 => write!(f, "水晶"),
+            Self::草莓 => write!(f, "草莓"),
+            Self::卷心菜 => write!(f, "卷心菜"),
+            Self::樱芜菁 => write!(f, "樱芜菁"),
+            Self::洋葱 => write!(f, "洋葱"),
+            Self::托伊药草 => write!(f, "托伊药草"),
+            Self::月落草 => write!(f, "月落草"),
+            Self::樱草 => write!(f, "樱草"),
+            Self::灯草 => write!(f, "灯草"),
+            Self::金刚花 => write!(f, "金刚花"),
+            Self::青水晶 => write!(f, "青水晶"),
+            Self::金卷心菜 => write!(f, "金卷心菜"),
+            Self::少女蜜瓜 => write!(f, "少女蜜瓜"),
+            Self::竹笋 => write!(f, "竹笋"),
+            Self::南瓜 => write!(f, "南瓜"),
+            Self::黄瓜 => write!(f, "黄瓜"),
+            Self::玉米 => write!(f, "玉米"),
+            Self::番茄 => write!(f, "番茄"),
+            Self::茄子 => write!(f, "茄子"),
+            Self::菠萝 => write!(f, "菠萝"),
+            Self::粉红猫 => write!(f, "粉红猫"),
+            Self::铁千轮 => write!(f, "铁千轮"),
+            Self::四叶草 => write!(f, "四叶草"),
+            Self::原之焰火 => write!(f, "原之焰火"),
+            Self::绿水晶 => write!(f, "绿水晶"),
+            Self::金南瓜 => write!(f, "金南瓜"),
+            Self::蓝草 => write!(f, "蓝草"),
+            Self::绿草 => write!(f, "绿草"),
+            Self::紫草 => write!(f, "紫草"),
+            Self::靛草 => write!(f, "靛草"),
+            Self::番薯 => write!(f, "番薯"),
+            Self::马铃薯 => write!(f, "马铃薯"),
+            Self::胡萝卜 => write!(f, "胡萝卜"),
+            Self::青椒 => write!(f, "青椒"),
+            Self::菠菜 => write!(f, "菠菜"),
+            Self::魅蓝草 => write!(f, "魅蓝草"),
+            Self::红叶花 => write!(f, "红叶花"),
+            Self::剧毒蒲公英 => write!(f, "暂停"),
+            Self::红水晶 => write!(f, "红水晶"),
+            Self::金马铃薯 => write!(f, "金马铃薯"),
+            Self::芜菁 => write!(f, "芜菁"),
+            Self::白萝卜 => write!(f, "白萝卜"),
+            Self::葱 => write!(f, "葱"),
+            Self::白菜 => write!(f, "白菜"),
+            Self::树形草 => write!(f, "树形草"),
+            Self::白水晶 => write!(f, "白水晶"),
+            Self::金芜青 => write!(f, "金芜青"),
+            Self::火热果实 => write!(f, "火热果实"),
+            Self::白草 => write!(f, "白草"),
+        }
+    }
+}
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub(crate) enum 作物等级 {
     LV1 = 0,
     LV2 = 1,
@@ -210,19 +251,24 @@ pub(crate) enum 作物等级 {
     LV10 = 9,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Hash,
-    strum_macros::EnumIter,
-    strum_macros::Display,
-)]
+impl ::core::fmt::Display for 作物等级 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::LV1 => write!(f, "LV1"),
+            Self::LV2 => write!(f, "LV2"),
+            Self::LV3 => write!(f, "LV3"),
+            Self::LV4 => write!(f, "LV4"),
+            Self::LV5 => write!(f, "LV5"),
+            Self::LV6 => write!(f, "LV6"),
+            Self::LV7 => write!(f, "LV7"),
+            Self::LV8 => write!(f, "LV8"),
+            Self::LV9 => write!(f, "LV9"),
+            Self::LV10 => write!(f, "LV10"),
+        }
+    }
+}
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub(crate) enum 作物生长阶段 {
     // 无 = 0,
     一阶段 = 0x1,
@@ -230,6 +276,18 @@ pub(crate) enum 作物生长阶段 {
     三阶段 = 0x3,
     四阶段 = 0x4,
     五阶段 = 0x5,
+}
+
+impl ::core::fmt::Display for 作物生长阶段 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::一阶段 => write!(f, "一阶段"),
+            Self::二阶段 => write!(f, "二阶段"),
+            Self::三阶段 => write!(f, "三阶段"),
+            Self::四阶段 => write!(f, "四阶段"),
+            Self::五阶段 => write!(f, "五阶段"),
+        }
+    }
 }
 
 impl hudhook::ImguiRenderLoop for 修改器 {
@@ -272,23 +330,113 @@ impl 修改器 {
             hudhook::imgui::internal::RawCast::raw_mut(_ctx.fonts()),
             "C:\\windows\\fonts\\simhei.ttf\0".as_ptr().cast(),
             20.0,
-            std::ptr::null(),
+            ::std::ptr::null(),
             hudhook::imgui::sys::ImFontAtlas_GetGlyphRangesChineseFull(
                 hudhook::imgui::internal::RawCast::raw_mut(_ctx.fonts()),
             ),
         );
 
-        for 作物类型 in <作物类型 as strum::IntoEnumIterator>::iter() {
-            self.作物类型列表.push(作物类型)
-        }
+        self.作物类型列表 = &[
+            作物类型::无,
+            作物类型::石头,
+            作物类型::岩石,
+            作物类型::树枝,
+            作物类型::树桩,
+            作物类型::木材,
+            作物类型::毒沼,
+            作物类型::药草,
+            作物类型::解毒草,
+            作物类型::黑草,
+            作物类型::枯草,
+            作物类型::黄草,
+            作物类型::苦橙草,
+            作物类型::杂草,
+            作物类型::季节岩,
+            作物类型::花卉,
+            作物类型::水晶,
+            作物类型::草莓,
+            作物类型::卷心菜,
+            作物类型::樱芜菁,
+            作物类型::洋葱,
+            作物类型::托伊药草,
+            作物类型::月落草,
+            作物类型::樱草,
+            作物类型::灯草,
+            作物类型::金刚花,
+            作物类型::青水晶,
+            作物类型::金卷心菜,
+            作物类型::少女蜜瓜,
+            作物类型::竹笋,
+            作物类型::南瓜,
+            作物类型::黄瓜,
+            作物类型::玉米,
+            作物类型::番茄,
+            作物类型::茄子,
+            作物类型::菠萝,
+            作物类型::粉红猫,
+            作物类型::铁千轮,
+            作物类型::四叶草,
+            作物类型::原之焰火,
+            作物类型::绿水晶,
+            作物类型::金南瓜,
+            作物类型::蓝草,
+            作物类型::绿草,
+            作物类型::紫草,
+            作物类型::靛草,
+            作物类型::番薯,
+            作物类型::马铃薯,
+            作物类型::胡萝卜,
+            作物类型::青椒,
+            作物类型::菠菜,
+            作物类型::魅蓝草,
+            作物类型::红叶花,
+            作物类型::剧毒蒲公英,
+            作物类型::红水晶,
+            作物类型::金马铃薯,
+            作物类型::芜菁,
+            作物类型::白萝卜,
+            作物类型::葱,
+            作物类型::白菜,
+            作物类型::树形草,
+            作物类型::白水晶,
+            作物类型::金芜青,
+            作物类型::火热果实,
+            作物类型::白草,
+        ];
 
-        for 作物等级 in <作物等级 as strum::IntoEnumIterator>::iter() {
-            self.作物等级列表.push(作物等级)
-        }
+        self.作物等级列表 = &[
+            作物等级::LV1,
+            作物等级::LV2,
+            作物等级::LV3,
+            作物等级::LV4,
+            作物等级::LV5,
+            作物等级::LV6,
+            作物等级::LV7,
+            作物等级::LV8,
+            作物等级::LV9,
+            作物等级::LV10,
+        ];
 
-        for 作物生长阶段 in <作物生长阶段 as strum::IntoEnumIterator>::iter() {
-            self.作物生长阶段列表.push(作物生长阶段)
-        }
+        self.作物生长阶段列表 = &[
+            作物生长阶段::一阶段,
+            作物生长阶段::二阶段,
+            作物生长阶段::三阶段,
+            作物生长阶段::四阶段,
+            作物生长阶段::五阶段,
+        ];
+
+        self.季节列表 = &[季节::春, 季节::夏, 季节::秋, 季节::冬];
+
+        self.时间流速列表 = &[
+            时间流速::暂停时间,
+            时间流速::百分之一,
+            时间流速::十分之一,
+            时间流速::四分之一,
+            时间流速::二分之一,
+            时间流速::默认,
+            时间流速::一点五,
+            时间流速::两点零,
+        ];
 
         for 秒 in 0..60 {
             self.秒列表.push(秒);
@@ -302,16 +450,8 @@ impl 修改器 {
             self.天列表.push(天);
         }
 
-        for 季节 in <季节 as strum::IntoEnumIterator>::iter() {
-            self.季节列表.push(季节);
-        }
-
         for 年 in 1..100 {
             self.年列表.push(年);
-        }
-
-        for 时间流速 in <时间流速 as strum::IntoEnumIterator>::iter() {
-            self.时间流速列表.push(时间流速)
         }
     }
 
@@ -494,7 +634,7 @@ impl 修改器 {
 
             if (*crate::hook::HOOK_MUT).自动种植开关 {
                 if let Some(cb) = ui.begin_combo("种子类型", self.选择的作物.to_string()) {
-                    for current in &self.作物类型列表 {
+                    for current in self.作物类型列表 {
                         if self.选择的作物 == *current {
                             ui.set_item_default_focus();
                         }
@@ -521,7 +661,7 @@ impl 修改器 {
 
                 if let Some(cb) = ui.begin_combo("种子等级", self.选择的作物等级.to_string())
                 {
-                    for current in &self.作物等级列表 {
+                    for current in self.作物等级列表 {
                         if self.选择的作物等级 == *current {
                             ui.set_item_default_focus();
                         }
@@ -548,7 +688,7 @@ impl 修改器 {
 
                 if let Some(cb) = ui.begin_combo("成长阶段", self.选择的作物生长阶段.to_string())
                 {
-                    for current in &self.作物生长阶段列表 {
+                    for current in self.作物生长阶段列表 {
                         if self.选择的作物生长阶段 == *current {
                             ui.set_item_default_focus();
                         }
@@ -657,7 +797,7 @@ impl 修改器 {
             }
 
             if let Some(cb) = ui.begin_combo("季节", self.选择的季节.to_string()) {
-                for current in &self.季节列表 {
+                for current in self.季节列表 {
                     if self.选择的季节 == *current {
                         ui.set_item_default_focus();
                     }
@@ -705,7 +845,7 @@ impl 修改器 {
             }
 
             if let Some(cb) = ui.begin_combo("流速", self.选择的流速.to_string()) {
-                for current in &self.时间流速列表 {
+                for current in self.时间流速列表 {
                     if self.选择的流速 == *current {
                         ui.set_item_default_focus();
                     }

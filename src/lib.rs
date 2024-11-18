@@ -13,7 +13,7 @@ static mut SANNDLL信息: libmem::Module = libmem::Module {
 unsafe extern "system" fn DllMain(
     h_module: isize,
     ul_reason_for_call: u32,
-    _lp_reserved: *mut core::ffi::c_void,
+    _lp_reserved: *mut ::core::ffi::c_void,
 ) -> i32 {
     if ul_reason_for_call == 1 {
         hudhook::windows::Win32::System::LibraryLoader::DisableThreadLibraryCalls(
@@ -21,7 +21,7 @@ unsafe extern "system" fn DllMain(
         )
         .unwrap();
 
-        std::thread::spawn(move || init(h_module));
+        ::std::thread::spawn(move || init(h_module));
     }
 
     1
@@ -31,11 +31,11 @@ unsafe fn init(h_module: isize) {
     let 修改器temp = trainer::修改器 {
         显示界面: true,
         选择的作物: trainer::作物类型::无,
-        作物类型列表: Vec::new(),
+        作物类型列表: &[],
         选择的作物等级: trainer::作物等级::LV1,
-        作物等级列表: Vec::new(),
+        作物等级列表: &[],
         选择的作物生长阶段: trainer::作物生长阶段::一阶段,
-        作物生长阶段列表: Vec::new(),
+        作物生长阶段列表: &[],
         选择的秒: 0,
         秒列表: Vec::new(),
         选择的时: 0,
@@ -43,25 +43,19 @@ unsafe fn init(h_module: isize) {
         选择的天: 1,
         天列表: Vec::new(),
         选择的季节: trainer::季节::春,
-        季节列表: Vec::new(),
+        季节列表: &[],
         选择的年: 1,
         年列表: Vec::new(),
         选择的流速: trainer::时间流速::默认,
-        时间流速列表: Vec::new(),
+        时间流速列表: &[],
     };
 
     let time_begin = ::std::time::Instant::now();
     let time_one_sec = ::std::time::Duration::from_secs(1);
 
-    loop {
-        ::std::thread::sleep(time_one_sec);
-
-        if time_begin.elapsed().as_secs() > 30 {
-            return;
-        }
-
+    while time_begin.elapsed().as_secs() < 60 {
         if let (Some(live2d), Some(sandll)) = (
-            libmem::find_module("Live2DCubismCore.dll"),
+            libmem::find_module("Live2DCubism::core.dll"),
             libmem::find_module("SanDLL.dll"),
         ) {
             if live2d.base != 0 && sandll.base != 0 {
@@ -69,6 +63,8 @@ unsafe fn init(h_module: isize) {
                 break;
             }
         }
+
+        ::std::thread::sleep(time_one_sec);
     }
 
     if ::hudhook::Hudhook::builder()
