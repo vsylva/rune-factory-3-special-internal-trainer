@@ -333,14 +333,14 @@ unsafe fn 自动钓鱼() {
         movzx ecx, word ptr [rax + 0x18]
         cmp cx, 0x5
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -349,7 +349,7 @@ unsafe fn 自动钓鱼() {
         mov word ptr [rax], 0x1
         ",
         in("rax") &raw const HOOK.自动按键标签,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -359,21 +359,21 @@ unsafe fn 自动钓鱼() {
         mov word ptr [rax], 0x0
         ",
         in("rax") &raw const HOOK.自动按键标签,
-        options(nomem, nostack));
+        options(nostack));
 
     std::arch::asm!(
         "
         3:
         cmp cx, 0x3
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -393,7 +393,7 @@ unsafe fn 自动钓鱼() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -403,14 +403,14 @@ unsafe fn 自动按提钓竿的键() {
         not dx
         and dx, ax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -418,7 +418,7 @@ unsafe fn 自动按提钓竿的键() {
         cmp rax, 0x1
         ",
         in("rax") HOOK.自动按键标签,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -428,14 +428,14 @@ unsafe fn 自动按提钓竿的键() {
 
         2:
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -455,7 +455,7 @@ unsafe fn 自动按提钓竿的键() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -464,7 +464,7 @@ unsafe fn 穿墙() {
         "
         mov rsi, rdx
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -472,7 +472,7 @@ unsafe fn 穿墙() {
         push rax
         push rcx
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -483,7 +483,7 @@ unsafe fn 穿墙() {
         cmp rbx, rax
         ",
         in("rax") &raw mut crate::SANNDLL信息.base,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -491,7 +491,7 @@ unsafe fn 穿墙() {
         pop rcx
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -500,7 +500,7 @@ unsafe fn 穿墙() {
         test rcx, rcx
         2:
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -520,7 +520,7 @@ unsafe fn 穿墙() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -529,7 +529,7 @@ unsafe fn 居民友谊倍率() {
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -539,14 +539,14 @@ unsafe fn 居民友谊倍率() {
         imul r9d, eax
         test r11, r11
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -566,7 +566,7 @@ unsafe fn 居民友谊倍率() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -580,7 +580,7 @@ unsafe fn 作物立即长成() {
         shr edx, 0x1
         and edx, 0x7F
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -600,7 +600,7 @@ unsafe fn 作物立即长成() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -609,7 +609,7 @@ unsafe fn 技能经验倍率() {
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -619,14 +619,14 @@ unsafe fn 技能经验倍率() {
         movsxd  r8, edx
         movzx ecx, si
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -646,7 +646,7 @@ unsafe fn 技能经验倍率() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -656,7 +656,7 @@ unsafe fn 农田() {
         push rax
         push r11
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -673,7 +673,7 @@ unsafe fn 农田() {
         2:
         ",
         in("r11") HOOK.土壤质量标签,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -690,7 +690,7 @@ unsafe fn 农田() {
         3:
         ",
         in("r12") HOOK.自动浇水标签       ,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -712,7 +712,7 @@ unsafe fn 农田() {
         4:
         ",
         in("r13") HOOK.自动耕作标签      ,
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -729,7 +729,7 @@ unsafe fn 农田() {
 
         in("r14") HOOK.自动种植标签,
 
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -743,7 +743,7 @@ unsafe fn 农田() {
         5:
         ",
         in("r15") std::ptr::addr_of!(HOOK.作物属性),
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -755,7 +755,7 @@ unsafe fn 农田() {
         pop r14
         pop r15
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -763,7 +763,7 @@ unsafe fn 农田() {
         add rbx, 0x8
         cmp di, r15w
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -783,7 +783,7 @@ unsafe fn 农田() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -792,7 +792,7 @@ unsafe fn 时间() {
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -809,7 +809,7 @@ unsafe fn 时间() {
         pop rax
         pop r15
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -837,7 +837,7 @@ unsafe fn 时间() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -857,7 +857,7 @@ unsafe fn 无限委托() {
 
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -877,7 +877,7 @@ unsafe fn 无限委托() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -886,7 +886,7 @@ unsafe fn 战斗经验倍率() {
         "
         push rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -897,14 +897,14 @@ unsafe fn 战斗经验倍率() {
         imul r8d, eax
         add ecx, r8d
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop rax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -924,7 +924,7 @@ unsafe fn 战斗经验倍率() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -935,7 +935,7 @@ unsafe fn 立即驯服魔物() {
         and ecx, 0x7F
         mov r8w, cx
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -955,7 +955,7 @@ unsafe fn 立即驯服魔物() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -970,7 +970,7 @@ unsafe fn 无负面状态() {
         pop rax
         mov ebp, 0x1000
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -990,7 +990,7 @@ unsafe fn 无负面状态() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
 
@@ -999,7 +999,7 @@ unsafe fn 伤害倍率() {
         "
         push r10
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -1010,14 +1010,14 @@ unsafe fn 伤害倍率() {
         mov esi, eax
         mov [rsp + 0x48], eax
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
         "
         pop r10
         ",
-        options(nomem, nostack)
+        options(nostack)
     );
 
     std::arch::asm!(
@@ -1037,6 +1037,6 @@ unsafe fn 伤害倍率() {
         "nop",
         "nop",
         "nop",
-        options(nomem, nostack)
+        options(nostack)
     );
 }
