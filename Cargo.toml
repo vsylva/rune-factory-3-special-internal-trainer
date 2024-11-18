@@ -12,8 +12,8 @@ crate-type = ["cdylib"]
 hudhook = { git = "https://github.com/veeenu/hudhook.git", rev = "33d4279", default-features = false, features = [
     "dx11",
 ] }
-# libmem = "5.0.1"
-libmem = { version = "5.0.1", default-features = false }
+libmem = "5.0.1"
+# libmem = { version = "5.0.1", default-features = false }
 
 [build-dependencies]
 forward-dll = "0.1.16"
