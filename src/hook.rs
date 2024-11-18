@@ -212,6 +212,7 @@ impl 汇编Hook {
     }
 }
 pub(crate) static mut HOOK: Hook = Hook::new();
+pub(crate) const HOOK_MUT: *mut Hook = &raw mut HOOK;
 
 pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
     HOOK.金币地址 = (crate::SANNDLL信息.base + 0x2AD192C) as *mut u32;
@@ -272,7 +273,7 @@ pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
         8,
         农田 as *mut ::core::ffi::c_void,
     )?;
-    (*&raw mut HOOK).农田.打开();
+    (*HOOK_MUT).农田.打开();
 
     HOOK.时间 = 汇编Hook::创建(
         mod_addr,
@@ -281,7 +282,7 @@ pub(crate) unsafe fn 初始化(mod_addr: usize, mod_size: usize) -> Option<()> {
         6,
         时间 as *mut ::core::ffi::c_void,
     )?;
-    (*&raw mut HOOK).时间.打开();
+    (*HOOK_MUT).时间.打开();
 
     HOOK.无限委托 = 汇编Hook::创建(
         mod_addr,
@@ -347,7 +348,7 @@ unsafe fn 自动钓鱼() {
         je 2f
         mov word ptr [rax], 0x1
         ",
-        in("rax") ::std::ptr::addr_of!(HOOK.自动按键标签),
+        in("rax") &raw const HOOK.自动按键标签,
         options(nomem, nostack)
     );
 
@@ -357,7 +358,7 @@ unsafe fn 自动钓鱼() {
         2:
         mov word ptr [rax], 0x0
         ",
-        in("rax") ::std::ptr::addr_of!(HOOK.自动按键标签),
+        in("rax") &raw const HOOK.自动按键标签,
         options(nomem, nostack));
 
     std::arch::asm!(
@@ -481,7 +482,7 @@ unsafe fn 穿墙() {
         lea rax, [rcx]
         cmp rbx, rax
         ",
-        in("rax") std::ptr::addr_of_mut!(crate::SANNDLL信息.base),
+        in("rax") &raw mut crate::SANNDLL信息.base,
         options(nomem, nostack)
     );
 
@@ -799,7 +800,7 @@ unsafe fn 时间() {
         lea rax, [r9 + 0x4]
         mov [r15], rax
         ",
-        in("r15") ::std::ptr::addr_of!(HOOK.时间指针),
+        in("r15") &raw const HOOK.时间指针,
         options(nostack)
     );
 

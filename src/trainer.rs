@@ -342,7 +342,7 @@ impl 修改器 {
             .title_bar(true)
             .size([600.0, 450.0], hudhook::imgui::Condition::FirstUseEver)
             .build(|| {
-                if (*&raw mut crate::hook::HOOK).时间指针.is_null() {
+                if (*crate::hook::HOOK_MUT).时间指针.is_null() {
                     ui.text_colored([1.0, 0.0, 0.0, 1.0], "等待开始游戏......");
 
                     return;
@@ -353,438 +353,399 @@ impl 修改器 {
     }
 
     pub(crate) unsafe fn 每帧渲染(&mut self, ui: &hudhook::imgui::Ui) {
-        if let Some(tab_bar) = ui.tab_bar("#tab_bar") {
-            if let Some(tab_item) = ui.tab_item("功能") {
-                if ui.checkbox(
-                    "最高金币",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).金币max开关,
-                ) {
-                    if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
-                        Some((*&raw mut crate::hook::HOOK).金币地址.cast()),
-                        4,
-                    )
-                    .as_bool()
-                    {
-                        if (*&raw mut crate::hook::HOOK).金币max开关 {
-                            (*&raw mut crate::hook::HOOK).金币旧值 =
-                                (*&raw mut crate::hook::HOOK).金币地址.read();
+        let Some(tab_bar) = ui.tab_bar("#tab_bar") else {
+            return;
+        };
 
-                            (*&raw mut crate::hook::HOOK).金币地址.write(9999999);
-                        } else {
-                            (*&raw mut crate::hook::HOOK)
-                                .金币地址
-                                .write((*&raw mut crate::hook::HOOK).金币旧值);
-                        }
+        if let Some(tab_item) = ui.tab_item("功能") {
+            if ui.checkbox("最高金币", &mut (*crate::hook::HOOK_MUT).金币max开关) {
+                if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
+                    Some((*crate::hook::HOOK_MUT).金币地址.cast()),
+                    4,
+                )
+                .as_bool()
+                {
+                    if (*crate::hook::HOOK_MUT).金币max开关 {
+                        (*crate::hook::HOOK_MUT).金币旧值 =
+                            (*crate::hook::HOOK_MUT).金币地址.read();
+
+                        (*crate::hook::HOOK_MUT).金币地址.write(9999999);
+                    } else {
+                        (*crate::hook::HOOK_MUT)
+                            .金币地址
+                            .write((*crate::hook::HOOK_MUT).金币旧值);
                     }
                 }
-
-                if ui.checkbox(
-                    "最高木材",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).木头max开关,
-                ) {
-                    if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
-                        Some((*&raw mut crate::hook::HOOK).木头地址.cast()),
-                        4,
-                    )
-                    .as_bool()
-                    {
-                        if (*&raw mut crate::hook::HOOK).木头max开关 {
-                            (*&raw mut crate::hook::HOOK).木头旧值 =
-                                (*&raw mut crate::hook::HOOK).木头地址.read();
-
-                            (*&raw mut crate::hook::HOOK).木头地址.write(0x3FFF);
-                        } else {
-                            (*&raw mut crate::hook::HOOK)
-                                .木头地址
-                                .write((*&raw mut crate::hook::HOOK).木头旧值);
-                        }
-                    }
-                }
-
-                if ui.checkbox(
-                    "钓鱼自动提竿",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).自动钓鱼.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).自动钓鱼.切换开关();
-
-                    (*&raw mut crate::hook::HOOK).自动按键.开关 =
-                        (*&raw mut crate::hook::HOOK).自动钓鱼.开关;
-
-                    (*&raw mut crate::hook::HOOK).自动按键.切换开关();
-                }
-
-                if ui.checkbox(
-                    "穿墙",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).穿墙.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).穿墙.切换开关();
-                }
-
-                if ui.checkbox(
-                    "百倍送礼友谊",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).居民友谊倍率.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).居民友谊倍率.切换开关()
-                }
-
-                if ui.checkbox(
-                    "百倍技能经验",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).技能经验倍率.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).技能经验倍率.切换开关()
-                }
-
-                if ui.checkbox(
-                    "百倍战斗经验",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).战斗经验倍率.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).战斗经验倍率.切换开关()
-                }
-
-                if ui.checkbox(
-                    "100%驯服魔物",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).立即驯服.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).立即驯服.切换开关()
-                }
-
-                if ui.checkbox(
-                    "无限委托",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).无限委托.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).无限委托.切换开关()
-                }
-
-                if ui.checkbox(
-                    "无负面状态",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).无负面状态.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).无负面状态.切换开关()
-                }
-
-                if ui.checkbox(
-                    "百倍伤害",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).伤害倍率.开关,
-                ) {
-                    (*&raw mut (*&raw mut crate::hook::HOOK))
-                        .伤害倍率
-                        .切换开关()
-                }
-
-                tab_item.end();
             }
 
-            if let Some(tab_item) = ui.tab_item("农田") {
-                if ui.checkbox(
-                    "作物即时成熟",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).作物立即长成.开关,
-                ) {
-                    (*&raw mut crate::hook::HOOK).作物立即长成.切换开关()
-                }
+            if ui.checkbox("最高木材", &mut (*crate::hook::HOOK_MUT).木头max开关) {
+                if !hudhook::windows::Win32::System::Memory::IsBadReadPtr(
+                    Some((*crate::hook::HOOK_MUT).木头地址.cast()),
+                    4,
+                )
+                .as_bool()
+                {
+                    if (*crate::hook::HOOK_MUT).木头max开关 {
+                        (*crate::hook::HOOK_MUT).木头旧值 =
+                            (*crate::hook::HOOK_MUT).木头地址.read();
 
-                if ui.checkbox(
-                    "耕作所有土地",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).自动耕作开关,
-                ) {
-                    if (*&raw mut crate::hook::HOOK).自动耕作开关 {
-                        (*&raw mut crate::hook::HOOK).自动耕作标签 = 1;
+                        (*crate::hook::HOOK_MUT).木头地址.write(0x3FFF);
                     } else {
-                        (*&raw mut crate::hook::HOOK).自动耕作标签 = 0;
+                        (*crate::hook::HOOK_MUT)
+                            .木头地址
+                            .write((*crate::hook::HOOK_MUT).木头旧值);
                     }
                 }
-
-                if ui.checkbox(
-                    "土地状态最优",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).土壤质量开关,
-                ) {
-                    if (*&raw mut crate::hook::HOOK).土壤质量开关 {
-                        (*&raw mut crate::hook::HOOK).土壤质量标签 = 1;
-                    } else {
-                        (*&raw mut crate::hook::HOOK).土壤质量标签 = 0;
-                    }
-                }
-
-                if ui.checkbox(
-                    "自动浇水",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).自动浇水开关,
-                ) {
-                    if (*&raw mut crate::hook::HOOK).自动浇水开关 {
-                        (*&raw mut crate::hook::HOOK).自动浇水标签 = 1;
-                    } else {
-                        (*&raw mut crate::hook::HOOK).自动浇水标签 = 0;
-                    }
-                }
-
-                if ui.checkbox(
-                    "自动种植",
-                    &mut (*&raw mut (*&raw mut crate::hook::HOOK)).自动种植开关,
-                ) {
-                    if (*&raw mut crate::hook::HOOK).自动种植开关 {
-                        (*&raw mut crate::hook::HOOK).自动种植标签 = 1;
-                    } else {
-                        (*&raw mut crate::hook::HOOK).自动种植标签 = 0;
-                    }
-                }
-
-                if (*&raw mut crate::hook::HOOK).自动种植开关 {
-                    if let Some(cb) = ui.begin_combo("种子类型", self.选择的作物.to_string())
-                    {
-                        for current in &self.作物类型列表 {
-                            if self.选择的作物 == *current {
-                                ui.set_item_default_focus();
-                            }
-
-                            if ui
-                                .selectable_config(current.to_string())
-                                .selected(self.选择的作物 == *current)
-                                .build()
-                            {
-                                self.选择的作物 = *current;
-                            }
-                        }
-
-                        cb.end();
-                    }
-
-                    ui.same_line();
-
-                    if ui.button("设置##类型") {
-                        (*&raw mut crate::hook::HOOK)
-                            .作物属性
-                            .设置作物类型(self.选择的作物);
-                    }
-
-                    if let Some(cb) = ui.begin_combo("种子等级", self.选择的作物等级.to_string())
-                    {
-                        for current in &self.作物等级列表 {
-                            if self.选择的作物等级 == *current {
-                                ui.set_item_default_focus();
-                            }
-
-                            if ui
-                                .selectable_config(current.to_string())
-                                .selected(self.选择的作物等级 == *current)
-                                .build()
-                            {
-                                self.选择的作物等级 = *current;
-                            }
-                        }
-
-                        cb.end();
-                    }
-
-                    ui.same_line();
-
-                    if ui.button("设置##等级") {
-                        (*&raw mut crate::hook::HOOK)
-                            .作物属性
-                            .设置作物等级(self.选择的作物等级);
-                    }
-
-                    if let Some(cb) =
-                        ui.begin_combo("成长阶段", self.选择的作物生长阶段.to_string())
-                    {
-                        for current in &self.作物生长阶段列表 {
-                            if self.选择的作物生长阶段 == *current {
-                                ui.set_item_default_focus();
-                            }
-
-                            if ui
-                                .selectable_config(current.to_string())
-                                .selected(self.选择的作物生长阶段 == *current)
-                                .build()
-                            {
-                                self.选择的作物生长阶段 = *current;
-                            }
-                        }
-
-                        cb.end();
-                    }
-
-                    ui.same_line();
-
-                    if ui.button("设置##阶段") {
-                        (*&raw mut crate::hook::HOOK)
-                            .作物属性
-                            .设置作物生长阶段(self.选择的作物生长阶段);
-                    }
-
-                    if ui.button("清除农田作物") {
-                        self.选择的作物 = 作物类型::无;
-
-                        (*&raw mut crate::hook::HOOK)
-                            .作物属性
-                            .设置作物类型(作物类型::无);
-                    }
-                }
-
-                tab_item.end();
             }
 
-            if let Some(tab_item) = ui.tab_item("时间") {
-                if let Some(cb) = ui.begin_combo("秒", self.选择的秒.to_string()) {
-                    for current in &self.秒列表 {
-                        if self.选择的秒 == *current {
-                            ui.set_item_default_focus();
-                        }
+            if ui.checkbox("钓鱼自动提竿", &mut (*crate::hook::HOOK_MUT).自动钓鱼.开关)
+            {
+                (*crate::hook::HOOK_MUT).自动钓鱼.切换开关();
 
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的秒 == *current)
-                            .build()
-                        {
-                            self.选择的秒 = *current;
-                        }
-                    }
+                (*crate::hook::HOOK_MUT).自动按键.开关 = (*crate::hook::HOOK_MUT).自动钓鱼.开关;
 
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##秒") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).秒 = self.选择的秒;
-                }
-
-                if let Some(cb) = ui.begin_combo("小时", self.选择的时.to_string()) {
-                    for current in &self.时列表 {
-                        if self.选择的时 == *current {
-                            ui.set_item_default_focus();
-                        }
-
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的时 == *current)
-                            .build()
-                        {
-                            self.选择的时 = *current;
-                        }
-                    }
-
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##时") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).时 = self.选择的时;
-                }
-
-                if let Some(cb) = ui.begin_combo("天", self.选择的天.to_string()) {
-                    for current in &self.天列表 {
-                        if self.选择的天 == *current {
-                            ui.set_item_default_focus();
-                        }
-
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的天 == *current)
-                            .build()
-                        {
-                            self.选择的天 = *current;
-                        }
-                    }
-
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##天") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).天 = self.选择的天;
-                }
-
-                if let Some(cb) = ui.begin_combo("季节", self.选择的季节.to_string()) {
-                    for current in &self.季节列表 {
-                        if self.选择的季节 == *current {
-                            ui.set_item_default_focus();
-                        }
-
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的季节 == *current)
-                            .build()
-                        {
-                            self.选择的季节 = *current;
-                        }
-                    }
-
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##季节") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).季节 = self.选择的季节 as u8;
-                }
-
-                if let Some(cb) = ui.begin_combo("年", self.选择的年.to_string()) {
-                    for current in &self.年列表 {
-                        if self.选择的年 == *current {
-                            ui.set_item_default_focus();
-                        }
-
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的年 == *current)
-                            .build()
-                        {
-                            self.选择的年 = *current;
-                        }
-                    }
-
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##年") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).年 = self.选择的年;
-                }
-
-                if let Some(cb) = ui.begin_combo("流速", self.选择的流速.to_string()) {
-                    for current in &self.时间流速列表 {
-                        if self.选择的流速 == *current {
-                            ui.set_item_default_focus();
-                        }
-
-                        if ui
-                            .selectable_config(current.to_string())
-                            .selected(self.选择的流速 == *current)
-                            .build()
-                        {
-                            self.选择的流速 = *current;
-                        }
-                    }
-
-                    cb.end();
-                }
-
-                ui.same_line();
-
-                if ui.button("设置##流速") {
-                    (*(*&raw mut crate::hook::HOOK).时间指针).流速 = self.选择的流速 as u32;
-                }
-
-                if ui.button("暂停时间") {
-                    self.选择的流速 = 时间流速::暂停时间;
-
-                    (*(*&raw mut crate::hook::HOOK).时间指针).流速 = self.选择的流速 as u32;
-                }
-
-                ui.same_line();
-
-                if ui.button("恢复时间") {
-                    self.选择的流速 = 时间流速::默认;
-
-                    (*(*&raw mut crate::hook::HOOK).时间指针).流速 = self.选择的流速 as u32;
-                }
-
-                tab_item.end();
+                (*crate::hook::HOOK_MUT).自动按键.切换开关();
             }
 
-            tab_bar.end();
+            if ui.checkbox("穿墙", &mut (*crate::hook::HOOK_MUT).穿墙.开关) {
+                (*crate::hook::HOOK_MUT).穿墙.切换开关();
+            }
+
+            if ui.checkbox(
+                "百倍送礼友谊",
+                &mut (*crate::hook::HOOK_MUT).居民友谊倍率.开关,
+            ) {
+                (*crate::hook::HOOK_MUT).居民友谊倍率.切换开关()
+            }
+
+            if ui.checkbox(
+                "百倍技能经验",
+                &mut (*crate::hook::HOOK_MUT).技能经验倍率.开关,
+            ) {
+                (*crate::hook::HOOK_MUT).技能经验倍率.切换开关()
+            }
+
+            if ui.checkbox(
+                "百倍战斗经验",
+                &mut (*crate::hook::HOOK_MUT).战斗经验倍率.开关,
+            ) {
+                (*crate::hook::HOOK_MUT).战斗经验倍率.切换开关()
+            }
+
+            if ui.checkbox("100%驯服魔物", &mut (*crate::hook::HOOK_MUT).立即驯服.开关) {
+                (*crate::hook::HOOK_MUT).立即驯服.切换开关()
+            }
+
+            if ui.checkbox("无限委托", &mut (*crate::hook::HOOK_MUT).无限委托.开关) {
+                (*crate::hook::HOOK_MUT).无限委托.切换开关()
+            }
+
+            if ui.checkbox("无负面状态", &mut (*crate::hook::HOOK_MUT).无负面状态.开关)
+            {
+                (*crate::hook::HOOK_MUT).无负面状态.切换开关()
+            }
+
+            if ui.checkbox("百倍伤害", &mut (*crate::hook::HOOK_MUT).伤害倍率.开关) {
+                (*crate::hook::HOOK_MUT).伤害倍率.切换开关()
+            }
+
+            tab_item.end();
         }
+
+        if let Some(tab_item) = ui.tab_item("农田") {
+            if ui.checkbox(
+                "作物即时成熟",
+                &mut (*crate::hook::HOOK_MUT).作物立即长成.开关,
+            ) {
+                (*crate::hook::HOOK_MUT).作物立即长成.切换开关()
+            }
+
+            if ui.checkbox("耕作所有土地", &mut (*crate::hook::HOOK_MUT).自动耕作开关) {
+                if (*crate::hook::HOOK_MUT).自动耕作开关 {
+                    (*crate::hook::HOOK_MUT).自动耕作标签 = 1;
+                } else {
+                    (*crate::hook::HOOK_MUT).自动耕作标签 = 0;
+                }
+            }
+
+            if ui.checkbox("土地状态最优", &mut (*crate::hook::HOOK_MUT).土壤质量开关) {
+                if (*crate::hook::HOOK_MUT).土壤质量开关 {
+                    (*crate::hook::HOOK_MUT).土壤质量标签 = 1;
+                } else {
+                    (*crate::hook::HOOK_MUT).土壤质量标签 = 0;
+                }
+            }
+
+            if ui.checkbox("自动浇水", &mut (*crate::hook::HOOK_MUT).自动浇水开关) {
+                if (*crate::hook::HOOK_MUT).自动浇水开关 {
+                    (*crate::hook::HOOK_MUT).自动浇水标签 = 1;
+                } else {
+                    (*crate::hook::HOOK_MUT).自动浇水标签 = 0;
+                }
+            }
+
+            if ui.checkbox("自动种植", &mut (*crate::hook::HOOK_MUT).自动种植开关) {
+                if (*crate::hook::HOOK_MUT).自动种植开关 {
+                    (*crate::hook::HOOK_MUT).自动种植标签 = 1;
+                } else {
+                    (*crate::hook::HOOK_MUT).自动种植标签 = 0;
+                }
+            }
+
+            if (*crate::hook::HOOK_MUT).自动种植开关 {
+                if let Some(cb) = ui.begin_combo("种子类型", self.选择的作物.to_string()) {
+                    for current in &self.作物类型列表 {
+                        if self.选择的作物 == *current {
+                            ui.set_item_default_focus();
+                        }
+
+                        if ui
+                            .selectable_config(current.to_string())
+                            .selected(self.选择的作物 == *current)
+                            .build()
+                        {
+                            self.选择的作物 = *current;
+                        }
+                    }
+
+                    cb.end();
+                }
+
+                ui.same_line();
+
+                if ui.button("设置##类型") {
+                    (*crate::hook::HOOK_MUT)
+                        .作物属性
+                        .设置作物类型(self.选择的作物);
+                }
+
+                if let Some(cb) = ui.begin_combo("种子等级", self.选择的作物等级.to_string())
+                {
+                    for current in &self.作物等级列表 {
+                        if self.选择的作物等级 == *current {
+                            ui.set_item_default_focus();
+                        }
+
+                        if ui
+                            .selectable_config(current.to_string())
+                            .selected(self.选择的作物等级 == *current)
+                            .build()
+                        {
+                            self.选择的作物等级 = *current;
+                        }
+                    }
+
+                    cb.end();
+                }
+
+                ui.same_line();
+
+                if ui.button("设置##等级") {
+                    (*crate::hook::HOOK_MUT)
+                        .作物属性
+                        .设置作物等级(self.选择的作物等级);
+                }
+
+                if let Some(cb) = ui.begin_combo("成长阶段", self.选择的作物生长阶段.to_string())
+                {
+                    for current in &self.作物生长阶段列表 {
+                        if self.选择的作物生长阶段 == *current {
+                            ui.set_item_default_focus();
+                        }
+
+                        if ui
+                            .selectable_config(current.to_string())
+                            .selected(self.选择的作物生长阶段 == *current)
+                            .build()
+                        {
+                            self.选择的作物生长阶段 = *current;
+                        }
+                    }
+
+                    cb.end();
+                }
+
+                ui.same_line();
+
+                if ui.button("设置##阶段") {
+                    (*crate::hook::HOOK_MUT)
+                        .作物属性
+                        .设置作物生长阶段(self.选择的作物生长阶段);
+                }
+
+                if ui.button("清除农田作物") {
+                    self.选择的作物 = 作物类型::无;
+
+                    (*crate::hook::HOOK_MUT).作物属性.设置作物类型(作物类型::无);
+                }
+            }
+
+            tab_item.end();
+        }
+
+        if let Some(tab_item) = ui.tab_item("时间") {
+            if let Some(cb) = ui.begin_combo("秒", self.选择的秒.to_string()) {
+                for current in &self.秒列表 {
+                    if self.选择的秒 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的秒 == *current)
+                        .build()
+                    {
+                        self.选择的秒 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##秒") {
+                (*(*crate::hook::HOOK_MUT).时间指针).秒 = self.选择的秒;
+            }
+
+            if let Some(cb) = ui.begin_combo("小时", self.选择的时.to_string()) {
+                for current in &self.时列表 {
+                    if self.选择的时 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的时 == *current)
+                        .build()
+                    {
+                        self.选择的时 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##时") {
+                (*(*crate::hook::HOOK_MUT).时间指针).时 = self.选择的时;
+            }
+
+            if let Some(cb) = ui.begin_combo("天", self.选择的天.to_string()) {
+                for current in &self.天列表 {
+                    if self.选择的天 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的天 == *current)
+                        .build()
+                    {
+                        self.选择的天 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##天") {
+                (*(*crate::hook::HOOK_MUT).时间指针).天 = self.选择的天;
+            }
+
+            if let Some(cb) = ui.begin_combo("季节", self.选择的季节.to_string()) {
+                for current in &self.季节列表 {
+                    if self.选择的季节 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的季节 == *current)
+                        .build()
+                    {
+                        self.选择的季节 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##季节") {
+                (*(*crate::hook::HOOK_MUT).时间指针).季节 = self.选择的季节 as u8;
+            }
+
+            if let Some(cb) = ui.begin_combo("年", self.选择的年.to_string()) {
+                for current in &self.年列表 {
+                    if self.选择的年 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的年 == *current)
+                        .build()
+                    {
+                        self.选择的年 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##年") {
+                (*(*crate::hook::HOOK_MUT).时间指针).年 = self.选择的年;
+            }
+
+            if let Some(cb) = ui.begin_combo("流速", self.选择的流速.to_string()) {
+                for current in &self.时间流速列表 {
+                    if self.选择的流速 == *current {
+                        ui.set_item_default_focus();
+                    }
+
+                    if ui
+                        .selectable_config(current.to_string())
+                        .selected(self.选择的流速 == *current)
+                        .build()
+                    {
+                        self.选择的流速 = *current;
+                    }
+                }
+
+                cb.end();
+            }
+
+            ui.same_line();
+
+            if ui.button("设置##流速") {
+                (*(*crate::hook::HOOK_MUT).时间指针).流速 = self.选择的流速 as u32;
+            }
+
+            if ui.button("暂停时间") {
+                self.选择的流速 = 时间流速::暂停时间;
+
+                (*(*crate::hook::HOOK_MUT).时间指针).流速 = self.选择的流速 as u32;
+            }
+
+            ui.same_line();
+
+            if ui.button("恢复时间") {
+                self.选择的流速 = 时间流速::默认;
+
+                (*(*crate::hook::HOOK_MUT).时间指针).流速 = self.选择的流速 as u32;
+            }
+
+            tab_item.end();
+        }
+
+        tab_bar.end();
     }
 }
 
