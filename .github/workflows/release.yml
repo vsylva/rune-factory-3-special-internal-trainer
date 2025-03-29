@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags: "v*"
+
+permissions:
+  contents: write
+
+env:
+  FILE: hid.dll
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Project
+        run:
+          |
+          $env:LIBMEM_DIR = "$pwd\vendor\libmem"
+
+          cargo +stable build --release --target x86_64-pc-windows-msvc
+
+      - name: Move File
+        run: Move-Item "$PWD\target\x86_64-pc-windows-msvc\release\${{env.FILE}}" "$PWD\${{env.FILE}}"
+
+      - name: Generate Changelog
+        run: git log -1 --pretty=format:"%s%n%b" > CHANGELOG.md
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG.md
+          prerelease: false
+          files: ${{env.FILE}}
+          fail_on_unmatched_files: true

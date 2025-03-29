@@ -1,0 +1,68 @@
+[package]
+name = "hudhook"
+version = "0.8.0"
+edition = "2021"
+description = "A graphics API hook with dear imgui render loop. Supports DirectX 9, 11, 12, and OpenGL 3."
+homepage = "https://github.com/veeenu/hudhook"
+repository = "https://github.com/veeenu/hudhook"
+documentation = "https://veeenu.github.io/hudhook"
+license-file = "LICENSE"
+authors = ["Andrea Venuta <venutawebdesign@gmail.com>"]
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-gnu"
+targets = [
+  "x86_64-pc-windows-msvc",
+  "i686-pc-windows-msvc",
+  "x86_64-pc-windows-gnu",
+  "i686-pc-windows-gnu"
+]
+
+[features]
+default = ["dx9", "dx11", "dx12", "opengl3"]
+dx9 = []
+dx11 = []
+dx12 = []
+opengl3 = ["dep:gl_generator"]
+imgui-freetype = ["imgui/freetype"]
+imgui-docking = ["imgui/docking"]
+imgui-tables-api = ["imgui/tables-api"]
+
+
+[dependencies]
+bitflags = "2.5.0"
+imgui = { git = "https://github.com/imgui-rs/imgui-rs", rev = "8445334" }
+once_cell = { version = "1.20.0", default-features = false,features=["std"] }
+parking_lot = "0.12"
+
+[dependencies.windows]
+version = "0.54.0"
+features = [
+  "Foundation_Numerics",
+  "Win32_Devices_HumanInterfaceDevice",
+  "Win32_Foundation",
+  "Win32_Graphics_Direct3D11",
+  "Win32_Graphics_Direct3D12",
+  "Win32_Graphics_Direct3D9",
+  "Win32_Graphics_Direct3D_Fxc",
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
+  "Win32_Graphics_Gdi",
+  "Win32_Graphics_OpenGL",
+  "Win32_Security",
+  "Win32_System_Com",
+  "Win32_System_Console",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Diagnostics_ToolHelp",
+  "Win32_System_LibraryLoader",
+  "Win32_System_Memory",
+  "Win32_System_SystemInformation",
+  "Win32_System_SystemServices",
+  "Win32_System_Threading",
+  "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_UI_WindowsAndMessaging",
+]
+
+[build-dependencies]
+cc = "1.0.72"
+gl_generator = { version = "0.14.0", optional = true }

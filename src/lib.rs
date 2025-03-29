@@ -1,3 +1,5 @@
+#![allow(unsafe_op_in_unsafe_fn)]
+
 static mut SANNDLL信息: libmem::Module = libmem::Module {
     base: 0,
     end: 0,
@@ -89,9 +91,7 @@ static mut HOOK: 修改器钩子 = 修改器钩子 {
 
     作物属性: crate::作物属性_结构 {
         类型: 0,
-        状态: crate::作物状态_联合 {
-            生长阶段: 0,
-        },
+        状态: crate::作物状态_联合 { 生长阶段: 0 },
     },
 
     时间: 汇编钩子_结构 {
@@ -724,7 +724,7 @@ impl ::core::fmt::Display for 作物生长阶段 {
 }
 
 impl hudhook::ImguiRenderLoop for 修改器 {
-    fn initialize<'a>(
+    unsafe fn initialize<'a>(
         &'a mut self,
         _ctx: &mut hudhook::imgui::Context,
         _render_context: &'a mut dyn hudhook::RenderContext,
@@ -734,7 +734,7 @@ impl hudhook::ImguiRenderLoop for 修改器 {
         }
     }
 
-    fn before_render<'a>(
+    unsafe fn before_render<'a>(
         &'a mut self,
         _ctx: &mut hudhook::imgui::Context,
         _render_context: &'a mut dyn hudhook::RenderContext,
@@ -766,7 +766,7 @@ impl hudhook::ImguiRenderLoop for 修改器 {
         _ctx.io_mut().mouse_draw_cursor = true;
     }
 
-    fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
+    unsafe fn render(&mut self, ui: &mut hudhook::imgui::Ui) {
         if !self.显示界面 {
             return;
         }

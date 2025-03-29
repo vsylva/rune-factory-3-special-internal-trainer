@@ -1,30 +1,28 @@
 [package]
-name = "rune-factory-3-internal-trainer"
-edition = "2021"
-license-file = "LICENSE"
+edition = "2024"
+name = "rune-factory-3-internal"
 publish = false
 
 [lib]
-name = "hid"
 crate-type = ["cdylib"]
+name = "hid"
 
 [dependencies]
-hudhook = { git = "https://github.com/veeenu/hudhook.git", rev = "33d4279", default-features = false, features = [
-    "dx11",
-] }
-libmem = "5.0.1"
-# libmem = { version = "5.0.1", default-features = false }
+hudhook = {path = "vendor/hudhook", default-features = false, features = [
+  "dx11",
+]}
+libmem = {version = "5.0.4", default-features = false}
 
 [build-dependencies]
 forward-dll = "0.1.16"
 
 [profile.release]
-opt-level = 3
-lto = "fat"
-strip = true
 codegen-units = 1
-panic = 'abort'
-incremental = false
 debug = false
 debug-assertions = false
+incremental = false
+lto = "fat"
+opt-level = 3
 overflow-checks = false
+panic = 'abort'
+strip = true
